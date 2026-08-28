@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ojo de la Tormenta — Guía Definitiva de Fortnite: Salvar el Mundo</title>
+<meta name="description" content="Guía enciclopédica en español sobre Fortnite: Salvar el Mundo — héroes, trampas, IA de enemigos, recursos, supervivientes, lore y end-game.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<!-- Carga de Model Viewer (modelo 3D del Rey de la Tormenta) -->
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+<style>
+  :root{
+    --bg-deep:      #04060f;
+    --bg-navy:      #0a0f24;
+    --bg-navy-2:    #0d1330;
+    --surface:      rgba(16,20,46,0.72);
+    --surface-solid:#111531;
+    --border:       rgba(122,92,255,0.22);
+    --border-soft:  rgba(122,92,255,0.12);
+    --text:         #eae8fb;
+    --muted:        #a49dd6;
+    --muted-2:      #6d68a3;
+
+    --storm-purple: #7c3aed;
+    --storm-purple-2:#9d5cff;
+    --storm-deep:   #2e1065;
+    --energy-orange:#ff8c2e;
+    --energy-yellow:#ffcf40;
+    --gold:         #f6c945;
+    --gold-2:       #fff2b8;
+    --danger:       #ff5470;
+
+    --fire: #ff7a45;
+    --nature: #3ddc84;
+    --water: #38bdf8;
+    --energy: #f5c542;
+
+    --radius: 16px;
+    --font-display: 'Rajdhani', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    background: var(--bg-deep);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ---------- FONDO AMBIENTAL: TORMENTA + PARTÍCULAS ---------- */
+  body::before{
+    content:"";
+    position: fixed; inset:0; z-index:-3;
+    background:
+      radial-gradient(70vw 50vh at 10% -5%, rgba(124,58,237,0.28), transparent 60%),
+      radial-gradient(60vw 45vh at 100% 0%, rgba(255,140,46,0.14), transparent 55%),
+      radial-gradient(80vw 60vh at 50% 120%, rgba(46,16,101,0.5), transparent 60%),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-navy) 45%, var(--bg-navy-2) 100%);
+  }
+  #fogCanvas{
+    position: fixed; inset:0; z-index:-2; width:100%; height:100%;
+    opacity:.55; pointer-events:none;
+  }
+  .noise-overlay{
+    position: fixed; inset:0; z-index:-1; pointer-events:none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  a{ color: var(--energy-yellow); }
+  h1,h2,h3,h4{ font-family: var(--font-display); font-weight: 700; letter-spacing: 0.01em; margin: 0 0 .5em; color: #fff; }
+  p{ margin: 0 0 1em; color: var(--text); }
+  code, .mono{ font-family: var(--font-mono); }
+
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  /* ---------- SCROLL REVEAL ---------- */
+  .reveal{ opacity:0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in-view{ opacity:1; transform: translateY(0); }
+  .reveal.d1{ transition-delay: .05s; }
+  .reveal.d2{ transition-delay: .12s; }
+  .reveal.d3{ transition-delay: .19s; }
+
+  /* ---------- NAV ---------- */
+  header.topbar{
+    position: sticky; top:0; z-index: 50;
+    background: rgba(4,6,15,0.82);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .topbar-inner{
+    max-width: 1280px; margin:0 auto; padding: 12px 20px;
+    display:flex; align-items:center; gap:18px; flex-wrap: wrap;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family: var(--font-display); font-weight:700; font-size:1.25rem; color:#fff;
+    white-space: nowrap;
+  }
+  .brand .eye{
+    width: 24px; height:24px; border-radius:50%; position:relative;
+    background: conic-gradient(from 0deg, var(--storm-purple), var(--energy-orange), var(--gold), var(--storm-purple));
+    animation: spin 6s linear infinite;
+    box-shadow: 0 0 16px rgba(255,140,46,.6), 0 0 26px rgba(124,58,237,.5);
+  }
+  @keyframes spin{ to{ transform: rotate(360deg);} }
+
+  nav.tabs{ display:flex; gap:4px; overflow-x:auto; flex:1; scrollbar-width: thin; }
+  nav.tabs::-webkit-scrollbar{ height:6px; }
+  nav.tabs::-webkit-scrollbar-thumb{ background: var(--border); border-radius:4px; }
+
+  .tab-btn{
+    background:transparent; border:1px solid transparent; color: var(--muted);
+    font-family: var(--font-display); font-weight:600; font-size:.86rem;
+    padding: 8px 12px; border-radius: 10px; cursor:pointer; white-space:nowrap;
+    transition: color .15s ease, background .15s ease, border-color .15s ease, box-shadow .2s ease;
+  }
+  .tab-btn:hover{ color: #fff; background: rgba(124,58,237,.14); }
+  .tab-btn.active{
+    color:#0a0a16; background: linear-gradient(135deg, var(--gold), var(--energy-orange));
+    border-color: transparent; box-shadow: 0 0 18px rgba(255,140,46,.45);
+  }
+
+  .search-wrap{ position: relative; min-width: 200px; }
+  .search-wrap input{
+    width:100%; background: var(--surface-solid); border:1px solid var(--border);
+    color: var(--text); padding: 9px 12px 9px 32px; border-radius: 10px; font-size:.86rem;
+    font-family: var(--font-body);
+  }
+  .search-wrap input::placeholder{ color: var(--muted-2); }
+  .search-wrap svg{ position:absolute; left:9px; top:50%; transform:translateY(-50%); opacity:.6; }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position: relative; overflow:hidden;
+    padding: 110px 20px 90px;
+    text-align:center;
+    border-bottom: 1px solid var(--border-soft);
+    isolation: isolate;
+  }
+  .hero-bg{
+    position:absolute; inset:0; z-index:-2;
+    background-image:
+      linear-gradient(180deg, rgba(4,6,15,.55) 0%, rgba(6,8,22,.78) 55%, var(--bg-deep) 100%),
+      url('https://images.unsplash.com/photo-1605727216801-e27ce1d0cc28?auto=format&fit=crop&w=1800&q=80');
+    background-size: cover; background-position: center 35%;
+    animation: heroPan 26s ease-in-out infinite alternate;
+  }
+  @keyframes heroPan{ from{ background-position: center 30%; } to{ background-position: center 42%; } }
+  .lightning-flash{
+    position:absolute; inset:0; z-index:-1; background: rgba(157,92,255,0.18);
+    opacity:0; pointer-events:none; animation: flash 9s ease-in-out infinite;
+  }
+  @keyframes flash{
+    0%,92%,100%{ opacity:0; } 93%{ opacity:.7; } 94%{ opacity:.05; } 95%{ opacity:.5; } 96%{ opacity:0; }
+  }
+  .hero-inner{ position:relative; z-index:1; max-width: 800px; margin:0 auto; }
+
+  model-viewer{
+    width: 100%;
+    max-width: 460px;
+    height: 300px;
+    margin: 0 auto 6px auto;
+    background-color: transparent;
+    --poster-color: transparent;
+    filter: drop-shadow(0 18px 34px rgba(124,58,237,.45));
+  }
+  @media (max-width: 600px){
+    model-viewer{ height: 240px; }
+  }
+  .model-poster, .model-error{
+    display:flex; align-items:center; justify-content:center; gap:8px; text-align:center;
+    width:100%; height:100%; color: var(--muted); font-family: var(--font-mono); font-size:.8rem;
+    padding: 0 18px;
+  }
+  .model-poster-dot{
+    width:8px; height:8px; border-radius:50%; background: var(--energy-orange);
+    box-shadow: 0 0 10px var(--energy-orange); animation: pulse 1.2s infinite;
+  }
+  .model-error{ color: var(--muted); line-height:1.5; }
+  .model-error code{ color: var(--gold); }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family: var(--font-mono); font-size:.75rem; letter-spacing:.14em; text-transform:uppercase;
+    color: var(--gold); border:1px solid rgba(246,201,69,.4); padding:5px 12px; border-radius:999px;
+    background: rgba(246,201,69,.08); margin-bottom: 22px;
+  }
+  .eyebrow .dot{ width:6px; height:6px; border-radius:50%; background: var(--energy-orange); box-shadow:0 0 10px var(--energy-orange); animation: pulse 1.8s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+  .hero h1{
+    font-size: clamp(2.2rem, 5vw, 3.8rem); line-height:1.05; margin-bottom: 18px;
+    background: linear-gradient(120deg, #fff 20%, var(--gold) 55%, var(--storm-purple-2) 85%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    text-shadow: 0 0 60px rgba(157,92,255,.25);
+  }
+  .hero p.lead{ color: var(--muted); font-size:1.1rem; max-width: 640px; margin: 0 auto 30px; }
+  .hero-stats{ display:flex; justify-content:center; gap:30px; flex-wrap:wrap; margin-top: 12px; }
+  .hero-stats div{ text-align:left; }
+  .hero-stats .num{ font-family: var(--font-display); font-size:1.7rem; color:var(--gold); font-weight:700; text-shadow: 0 0 16px rgba(246,201,69,.5); }
+  .hero-stats .label{ font-size:.75rem; color: var(--muted-2); text-transform:uppercase; letter-spacing:.08em; }
+
+  /* ---------- LAYOUT ---------- */
+  main{ max-width: 1080px; margin: 0 auto; padding: 50px 20px 110px; position:relative; z-index:1; }
+  section.panel{ display:none; }
+  section.panel.active{ display:block; }
+
+  .section-head{
+    position:relative; margin-bottom: 34px; padding: 26px 24px; border-radius: var(--radius);
+    overflow:hidden; border:1px solid var(--border-soft);
+    background-size: cover; background-position:center;
+    isolation:isolate;
+  }
+  .section-head::before{
+    content:""; position:absolute; inset:0; z-index:-1;
+    background: linear-gradient(120deg, rgba(6,8,22,.92) 30%, rgba(46,16,101,.7));
+  }
+  .section-head .idx{ font-family: var(--font-mono); color: var(--gold); font-size:.78rem; letter-spacing:.08em; }
+  .section-head h2{ font-size: 2rem; margin: 6px 0 8px; }
+  .section-head p{ color: var(--muted); max-width: 720px; margin:0; }
+
+  /* ---------- ACORDEÓN ---------- */
+  .accordion{ display:flex; flex-direction:column; gap:14px; }
+  .acc-item{
+    position: relative;
+    background: var(--surface); border:1px solid var(--border-soft);
+    border-radius: var(--radius); overflow:hidden;
+    backdrop-filter: blur(6px);
+    transition: border-color .25s ease, box-shadow .25s ease;
+  }
+  .acc-item::after{
+    content:""; position:absolute; inset:-1px; border-radius: var(--radius); z-index:-1;
+    background: linear-gradient(120deg, rgba(124,58,237,.5), rgba(255,140,46,.35));
+    opacity:0; transition: opacity .3s ease;
+  }
+  .acc-item:hover{ border-color: rgba(255,140,46,.4); }
+  .acc-item:hover::after{ opacity:.5; }
+  .acc-item.open{ box-shadow: 0 0 0 1px rgba(255,140,46,.3), 0 0 28px rgba(124,58,237,.28); }
+
+  .acc-header{
+    width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px;
+    background:transparent; border:none; text-align:left; cursor:pointer;
+    padding: 20px 22px; color:#fff;
+  }
+  .acc-header .htext h3{
+    font-size: 1.15rem; margin:0 0 4px; display:flex; align-items:center; gap:8px;
+    color: var(--gold-2);
+  }
+  .acc-header .htext .teaser{ color: var(--muted); font-size:.88rem; margin:0; }
+  .acc-toggle{
+    flex-shrink:0; display:flex; align-items:center; gap:8px;
+    font-family: var(--font-display); font-weight:700; font-size:.78rem; letter-spacing:.04em; text-transform:uppercase;
+    color: var(--bg-deep); background: linear-gradient(135deg, var(--gold), var(--energy-orange));
+    padding: 8px 14px; border-radius: 999px; white-space:nowrap;
+    box-shadow: 0 0 0 rgba(255,140,46,0); transition: box-shadow .3s ease, transform .2s ease;
+  }
+  .acc-item:hover .acc-toggle{ box-shadow: 0 0 18px rgba(255,140,46,.55); }
+  .acc-toggle svg{ transition: transform .3s ease; }
+  .acc-item.open .acc-toggle svg{ transform: rotate(180deg); }
+  .acc-item.open .acc-toggle .tlabel::after{ content: " —  Ocultar"; }
+  .acc-toggle .tlabel::after{ content: " —  Desplegar"; }
+
+  .acc-panel{
+    max-height:0; overflow:hidden; transition: max-height .5s cubic-bezier(.4,0,.2,1);
+  }
+  .acc-panel-inner{ padding: 0 22px 24px; border-top: 1px solid var(--border-soft); margin-top: -2px; padding-top: 18px; }
+
+  .acc-panel-inner ul, .acc-panel-inner ol{ padding-left: 1.15em; color: var(--text); }
+  .acc-panel-inner li{ margin-bottom: 6px; }
+  .acc-item.hidden-by-search{ display:none; }
+
+  .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
+  .grid-3{ display:grid; grid-template-columns: repeat(3,1fr); gap:16px; }
+  @media (max-width: 760px){ .grid-2, .grid-3{ grid-template-columns: 1fr; } }
+
+  .tag{
+    display:inline-block; font-family: var(--font-mono); font-size:.7rem; letter-spacing:.05em;
+    padding: 2px 9px; border-radius: 999px; border:1px solid var(--border); color: var(--muted); margin: 2px 4px 2px 0;
+  }
+  .tag.purple{ color: var(--storm-purple-2); border-color: rgba(124,58,237,.45); background: rgba(124,58,237,.1); }
+  .tag.gold{ color: var(--gold); border-color: rgba(246,201,69,.45); background: rgba(246,201,69,.1); }
+  .tag.fire{ color: var(--fire); border-color: rgba(255,122,69,.4); background: rgba(255,122,69,.08); }
+  .tag.nature{ color: var(--nature); border-color: rgba(61,220,132,.4); background: rgba(61,220,132,.08); }
+  .tag.water{ color: var(--water); border-color: rgba(56,189,248,.4); background: rgba(56,189,248,.08); }
+  .tag.energy{ color: var(--energy); border-color: rgba(245,197,66,.4); background: rgba(245,197,66,.08); }
+
+  table{ width:100%; border-collapse: collapse; margin: 14px 0; font-size:.92rem; }
+  th, td{ text-align:left; padding: 9px 12px; border-bottom: 1px solid var(--border-soft); }
+  th{ color: var(--gold); font-family: var(--font-mono); font-weight:600; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; }
+  tr:hover td{ background: rgba(124,58,237,.08); }
+  .table-scroll{ overflow-x:auto; }
+
+  .note{
+    display:flex; gap:10px; background: rgba(255,140,46,.07); border:1px solid rgba(255,140,46,.28);
+    padding: 12px 14px; border-radius: 10px; font-size:.9rem; color: var(--text); margin: 14px 0;
+  }
+  .note.warn{ background: rgba(255,84,112,.08); border-color: rgba(255,84,112,.32); }
+  .note strong{ color: #fff; }
+
+  .thumb{
+    width:100%; height:150px; object-fit:cover; border-radius: 12px; margin-bottom:14px;
+    border:1px solid var(--border-soft);
+    filter: saturate(1.1) contrast(1.05);
+  }
+
+  /* ---------- ELEMENT CALCULATOR ---------- */
+  .calc{ display:grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items:start; }
+  @media (max-width:760px){ .calc{ grid-template-columns:1fr; } }
+  .elem-btns{ display:flex; flex-wrap:wrap; gap:10px; }
+  .elem-btn{
+    flex:1 1 40%; cursor:pointer; border-radius: 12px; border:1px solid var(--border);
+    background: var(--surface-solid); color:#fff; font-family: var(--font-display); font-weight:600;
+    padding: 14px 10px; text-align:center; font-size:.95rem; transition: transform .12s ease, border-color .12s ease, box-shadow .2s ease;
+  }
+  .elem-btn:hover{ transform: translateY(-2px); }
+  .elem-btn[data-el="fuego"]{ border-color: rgba(255,122,69,.5); }
+  .elem-btn[data-el="naturaleza"]{ border-color: rgba(61,220,132,.5); }
+  .elem-btn[data-el="agua"]{ border-color: rgba(56,189,248,.5); }
+  .elem-btn[data-el="energia"]{ border-color: rgba(245,197,66,.5); }
+  .elem-btn.selected[data-el="fuego"]{ background: rgba(255,122,69,.18); box-shadow: 0 0 18px rgba(255,122,69,.35); }
+  .elem-btn.selected[data-el="naturaleza"]{ background: rgba(61,220,132,.18); box-shadow: 0 0 18px rgba(61,220,132,.35); }
+  .elem-btn.selected[data-el="agua"]{ background: rgba(56,189,248,.18); box-shadow: 0 0 18px rgba(56,189,248,.35); }
+  .elem-btn.selected[data-el="energia"]{ background: rgba(245,197,66,.18); box-shadow: 0 0 18px rgba(245,197,66,.35); }
+
+  .calc-result{
+    background: var(--surface); border:1px solid var(--border-soft); border-radius: var(--radius);
+    padding: 20px; min-height: 170px; display:flex; flex-direction:column; justify-content:center;
+  }
+  .calc-result .rec-elem{ font-family: var(--font-display); font-size:1.4rem; margin-bottom:6px; color: var(--gold); }
+  .calc-result .weak{ color: var(--muted-2); font-size:.85rem; }
+
+  .card-plain{
+    background: var(--surface); border:1px solid var(--border-soft); border-radius: var(--radius);
+    padding: 22px 24px; margin-bottom: 20px;
+  }
+  .card-plain h3{ color: var(--gold-2); }
+
+  footer{
+    border-top: 1px solid var(--border-soft); padding: 34px 20px; text-align:center;
+    color: var(--muted-2); font-size:.85rem; position:relative; z-index:1;
+  }
+  footer a{ color: var(--muted); }
+
+  .no-results{ text-align:center; color: var(--muted-2); padding: 40px 0; display:none; }
+</style>
+</head>
+<body>
+
+<canvas id="fogCanvas"></canvas>
+<div class="noise-overlay"></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="eye"></span> Ojo de la Tormenta</div>
+    <nav class="tabs" id="tabs" aria-label="Secciones de la guía">
+      <button class="tab-btn active" data-target="inicio">Inicio</button>
+      <button class="tab-btn" data-target="heroes">1 · Héroes</button>
+      <button class="tab-btn" data-target="trampas">2 · Trampas</button>
+      <button class="tab-btn" data-target="ia">3 · IA Enemigos</button>
+      <button class="tab-btn" data-target="recursos">4 · Recursos</button>
+      <button class="tab-btn" data-target="supervivientes">5 · Supervivientes</button>
+      <button class="tab-btn" data-target="lore">6 · Lore</button>
+      <button class="tab-btn" data-target="endgame">7 · End-Game</button>
+    </nav>
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="Buscar en la guía…" aria-label="Buscar en la guía">
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="lightning-flash" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <model-viewer
+      id="stormKingModel"
+      class="reveal"
+      src="storm_king.glb"
+      alt="Modelo 3D del Rey de la Tormenta"
+      auto-rotate
+      auto-rotate-delay="0"
+      rotation-per-second="16deg"
+      camera-controls
+      disable-zoom
+      shadow-intensity="1"
+      shadow-softness="0.8"
+      exposure="1.1"
+      interaction-prompt="none"
+      loading="eager"
+      reveal="auto">
+      <div slot="poster" class="model-poster"><span class="model-poster-dot"></span> Invocando al Rey de la Tormenta…</div>
+      <div slot="error" class="model-error">⚡ El modelo 3D no pudo cargarse. Comprueba que <code>storm_king.glb</code> esté junto a <code>index.html</code> y que el sitio se sirva por http(s) (Netlify o un servidor local), no abierto directamente como archivo.</div>
+    </model-viewer>
+    <span class="eyebrow reveal"><span class="dot"></span> Guía comunitaria no oficial</span>
+    <h1 class="reveal d1">La guía definitiva de<br>Salvar el Mundo</h1>
+    <p class="lead reveal d2">Ventajas, trampas, IA de enemigos, economía de esquemas, supervivientes, lore y las estrategias de end-game que la comunidad de r/FORTnITE ha perfeccionado desde 2017.</p>
+    <div class="hero-stats reveal d3">
+      <div><div class="num">7</div><div class="label">Secciones</div></div>
+      <div><div class="num">4</div><div class="label">Elementos</div></div>
+      <div><div class="num">30</div><div class="label">Oleadas ESA</div></div>
+      <div><div class="num">10:00</div><div class="label">Temporizador MSK</div></div>
+    </div>
+  </div>
+</section>
+
+<main>
+
+  <!-- INTRO / CALCULADORA -->
+  <section class="panel active" id="inicio">
+    <div class="section-head reveal" style="background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80');">
+      <span class="idx">HERRAMIENTA INTERACTIVA</span>
+      <h2>Selector de Elementos</h2>
+      <p>Elige el elemento del enemigo que tienes enfrente y te decimos con qué elemento de arma le sacas el máximo daño.</p>
+    </div>
+    <div class="card-plain reveal">
+      <div class="calc">
+        <div class="elem-btns" id="elemBtns">
+          <button class="elem-btn" data-el="fuego">🔥 Fuego</button>
+          <button class="elem-btn" data-el="naturaleza">🌿 Naturaleza</button>
+          <button class="elem-btn" data-el="agua">💧 Agua</button>
+          <button class="elem-btn" data-el="energia">⚡ Energía</button>
+        </div>
+        <div class="calc-result" id="calcResult">
+          <p style="color:var(--muted); margin:0;">Selecciona un elemento enemigo para ver la recomendación.</p>
+        </div>
+      </div>
+      <div class="note">
+        <strong>Regla rápida:</strong>&nbsp;Fuego quema la Madera, la Naturaleza perfora la Piedra, el Agua apaga el Metal, y la Energía es neutral pero eficiente contra escudos y contra sí misma.
+      </div>
+    </div>
+
+    <div class="card-plain reveal">
+      <h3>🧭 Cómo usar esta guía</h3>
+      <p>Usa la barra de navegación superior para saltar entre las siete secciones. Cada tema aparece como una tarjeta cerrada: pulsa <strong>«Desplegar información»</strong> para leer el contenido completo. El buscador filtra y abre automáticamente las tarjetas que coincidan.</p>
+      <div class="grid-3">
+        <div><span class="tag purple">Sección 1</span><p style="margin:6px 0 0;font-size:.9rem;">Héroes y meta de builds</p></div>
+        <div><span class="tag gold">Sección 2</span><p style="margin:6px 0 0;font-size:.9rem;">Trampas y control de masas</p></div>
+        <div><span class="tag fire">Sección 3</span><p style="margin:6px 0 0;font-size:.9rem;">IA y pathing de enemigos</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 1: HÉROES -->
+  <section class="panel" id="heroes">
+    <div class="section-head reveal" style="background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80');">
+      <span class="idx">SECCIÓN 01</span>
+      <h2>Sistema de Héroes y Ventajas</h2>
+      <p>Ventajas de Comandante, clases de subclase y las builds que domina el meta actual: Escudo Antitormenta, Rey de la Tormenta Mítico y Aventuras.</p>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>⚔️ Comandante vs. Apoyo</h3>
+            <p class="teaser">Cómo escalan las ventajas según rareza y por qué el Comandante debe coincidir con tu estilo de juego.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Cada superviviente puede colocarse como <strong>Comandante</strong> (el héroe activo que controlas, cuya Ventaja de Comandante se aplica a todo el escuadrón) o como <strong>Apoyo</strong> (aporta solo su Ventaja de Apoyo pasiva, normalmente más débil que la de Comandante). El escalado de las ventajas depende del nivel del héroe y de su rareza: los héroes Legendarios/Míticos escalan con multiplicadores mayores por punto de nivel que los Poco Comunes o Raros, por lo que subir de nivel un héroe base cambia directamente el porcentaje final que ves en la ventaja.</p>
+          <div class="note"><strong>Regla práctica:</strong> el Comandante que uses debe coincidir con tu arma o estilo de juego principal (ej. Ninja de espada, Soldado de explosivos, Constructor de trampas) porque su ventaja de Comandante amplifica precisamente ese estilo para todo el equipo.</div>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>🛡️ Clases y mecánicas clave</h3>
+            <p class="teaser">BASE, TEDDY, Carga Anti-material y Salto Mantis: la firma de cada clase.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>Clase</th><th>Rol</th><th>Mecánica de firma</th></tr></thead>
+            <tbody>
+              <tr><td>Constructores</td><td>Estructura, defensa y trampas</td><td><strong>BASE</strong>: dron que aplica bonificaciones de daño/reparación al escuadrón; sinergiza con perks de trampas y Ventajas de fortificación.</td></tr>
+              <tr><td>Trotamundos</td><td>Todoterreno / soporte de escudo</td><td>Bonos de movilidad y de escudo; muchos llevan la Ventaja de Equipo de curación por escudo, útil para escuadrones de resistencia.</td></tr>
+              <tr><td>Soldados</td><td>Daño de explosivos y armas de fuego</td><td><strong>TEDDY</strong> (dron explosivo que embiste) y la <strong>Carga Anti-material</strong> (mina/carga pegable de alto daño en área), pilares del daño a distancia y contra Husks acorazados.</td></tr>
+              <tr><td>Ninjas</td><td>Combate cuerpo a cuerpo y movilidad</td><td><strong>Salto Mantis</strong> (salto elevado con daño en área al aterrizar) y combos de espada con generación de energía/crítico por golpe consecutivo.</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>🤝 Ventajas de Equipo recomendadas</h3>
+            <p class="teaser">Blast from the Past, Happy Holidays y Supercharged Traps.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <ul>
+            <li><span class="tag purple">Blast from the Past</span> — potencia el daño de explosivos/carga anti-material del escuadrón; núcleo de builds de Soldado orientadas a AoE.</li>
+            <li><span class="tag purple">Happy Holidays</span> — ventaja festiva de curación/daño en área usada históricamente en builds de resistencia por su sinergia con estar rodeado de aliados.</li>
+            <li><span class="tag purple">Supercharged Traps</span> — aumenta directamente el daño o la eficacia de las trampas colocadas, la ventaja más importante para cualquier build enfocada en túneles de trampas.</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>🌩️ Build: Escudo Antitormenta</h3>
+            <p class="teaser">Prioriza durabilidad y recarga de trampas sobre daño puro.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Prioriza <strong>durabilidad y velocidad de recarga de trampas</strong> sobre daño puro, ya que las 30 oleadas exigen resistencia sostenida más que picos de daño. Comandante Constructor con BASE orientado a reparación, más un Trotamundos de Apoyo para regeneración de escudo del equipo.</p>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>👑 Build: Rey de la Tormenta Mítico (MSK)</h3>
+            <p class="teaser">Escuadrón mixto de alto daño para la carrera contrarreloj de 10 minutos.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Escuadrón mixto: un Soldado/Ninja de alto daño como Comandante para las fases de cristales y cuernos, con Apoyos que aporten reducción de daño recibido y regeneración de munición/energía, dado el límite estricto de 10 minutos.</p>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>🧗 Build: Aventuras (Ventures)</h3>
+            <p class="teaser">Por qué el escalado porcentual importa más que los valores planos.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>En el modo de escalado infinito de Aventuras, las builds priorizan <strong>ventajas porcentuales que sigan escalando</strong> (daño crítico, daño elemental, reducción de daño) por encima de valores planos, porque el nivel de poder de los enemigos crece sin techo fijo. El re-perk elemental cobra más importancia aquí que en la campaña principal.</p>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: TRAMPAS -->
+  <section class="panel" id="trampas">
+    <div class="section-head reveal" style="background-image:url('https://images.unsplash.com/photo-1517420704952-d9f39e95b43e?auto=format&fit=crop&w=1600&q=80');">
+      <span class="idx">SECCIÓN 02</span>
+      <h2>Mecánicas Avanzadas de Trampas y Control de Masas</h2>
+      <p>La física de empuje, el diseño de túneles y la optimización de perks que separan una base que aguanta de una que colapsa en la oleada 20.</p>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>🎯 La regla de los 5 impactos y la inmunidad a CC</h3>
+            <p class="teaser">Por qué un enemigo deja de responder al empuje tras cierto punto.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Los enemigos (especialmente Husks estándar) solo pueden recibir un número limitado de golpes de control de masas —empuje, aturdimiento, ralentización— antes de volverse <strong>resistentes</strong> y, tras acumular suficiente exposición, <strong>inmunes temporalmente</strong> a ese tipo de CC. La comunidad describe esta ventana como un ciclo de aproximadamente <strong>15 segundos</strong> de inmunidad tras un uso intensivo, tiempo durante el cual las trampas de empuje dejan de surtir efecto y el enemigo puede atravesar el túnel sin ser desviado.</p>
+          <div class="note warn"><strong>Implicación de diseño:</strong> ningún túnel de trampas debe depender al 100% de un único tipo de empuje; conviene alternar Neumáticos y Lanzadores con Dardos o Alquitrán para que un enemigo inmune a empuje siga siendo dañado igualmente.</div>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>🔁 Time Loops y túneles de reciclaje</h3>
+            <p class="teaser">Cómo forzar a un enemigo a repetir el mismo pasillo de trampas.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Un <strong>Time Loop</strong> es un pasillo cerrado donde un Lanzador impulsa al enemigo hacia adelante y la trayectoria lo devuelve al inicio del mismo pasillo (o a un pasillo paralelo), forzándolo a repetir el recorrido —y por tanto a recibir el daño de todas las trampas— varias veces antes de poder salir. La trayectoria exacta depende del ángulo del Lanzador y de la geometría de la estructura; pequeñas desalineaciones rompen el bucle y dejan escapar al enemigo.</p>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>🧱 Diseños óptimos de túneles</h3>
+            <p class="teaser">1×1 vs. 2×2, chokepoints y la lógica de «no desviación».</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <div class="grid-2">
+            <div>
+              <h4>Túnel 1×1</h4>
+              <p style="font-size:.92rem;">Pasillo de un solo bloque de ancho: obliga a los enemigos a pasar en fila, maximizando el número de impactos por trampa de pared, pero es más vulnerable a Smashers, que pueden destruir estructuras si el túnel no está reforzado.</p>
+            </div>
+            <div>
+              <h4>Túnel 2×2</h4>
+              <p style="font-size:.92rem;">Más ancho, permite manejar oleadas grandes sin cuello de botella total, pero reduce la densidad de impactos por enemigo individual; se compensa duplicando filas de trampas de techo y suelo.</p>
+            </div>
+          </div>
+          <h4>Chokepoints y lógica de «no desviación»</h4>
+          <p>Un chokepoint efectivo fuerza a los enemigos a converger en un único punto de entrada al perímetro. La «lógica de no desviación» consiste en eliminar cualquier ruta alternativa (incluidas rampas o rutas por el exterior) para que el pathing de la IA no tenga más opción que atravesar el túnel de trampas diseñado.</p>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>🧰 Tipos de trampa por ubicación</h3>
+            <p class="teaser">Dardos, Neumáticos, Luces y Alquitrán: qué hace cada uno.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>Ubicación</th><th>Trampa</th><th>Función principal</th></tr></thead>
+            <tbody>
+              <tr><td>Techo</td><td>Dardos</td><td>Daño perforante constante sobre el flujo de enemigos que pasa debajo.</td></tr>
+              <tr><td>Suelo</td><td>Neumáticos</td><td>Empuje vertical/horizontal para reencauzar enemigos hacia otras trampas o fuera del alcance de la base.</td></tr>
+              <tr><td>Pared</td><td>Luces (Zapper)</td><td>Daño eléctrico continuo a enemigos que caminan pegados a la pared del túnel.</td></tr>
+              <tr><td>Suelo</td><td>Alquitrán</td><td>Ralentiza a los enemigos, incluidos los <strong>Smashers</strong>, dándoles menos tiempo de contacto con la estructura antes de morir por el resto de trampas.</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>⚙️ Optimización de perks en trampas</h3>
+            <p class="teaser">Durabilidad, recarga e impacto: cuándo priorizar cada uno.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <ul>
+            <li><strong>Durabilidad acumulativa</strong> — perks de durabilidad en varias trampas del mismo esquema se suman, permitiendo tramos completos de oleadas altas sin reparar manualmente.</li>
+            <li><strong>Velocidad de recarga</strong> — crítica en trampas de daño directo (Dardos, Luces) porque reduce el tiempo muerto entre activaciones durante oleadas con enemigos en fila continua.</li>
+            <li><strong>Impacto/daño</strong> — se prioriza en la trampa «de cierre» del túnel (la última antes del núcleo), donde cualquier enemigo que sobreviva representa una amenaza directa al objetivo.</li>
+          </ul>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: IA -->
+  <section class="panel" id="ia">
+    <div class="section-head reveal" style="background-image:url('https://images.unsplash.com/photo-1487621167305-5d248087c724?auto=format&fit=crop&w=1600&q=80');">
+      <span class="idx">SECCIÓN 03</span>
+      <h2>Inteligencia Artificial de Enemigos y Pathing</h2>
+      <p>Cómo «piensa» la IA de Husks al elegir rutas, y las tablas de elementos que definen cada intercambio de daño.</p>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>🧠 Lógica de navegación (regla de los 3 bloques)</h3><p class="teaser">Cuánta estructura tolera destruir la IA antes de rodear.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>La IA evalúa el camino más corto hacia el objetivo y prioriza rutas que requieran destruir el menor número de estructuras. En la práctica, la comunidad observa que los enemigos toleran destruir aproximadamente <strong>hasta tres bloques/estructuras</strong> consecutivos como «coste» aceptable antes de preferir un desvío; por eso un perímetro sin puntos débiles de menos de esa profundidad puede ser evitado, mientras que muros simples de una sola capa suelen ser atravesados directamente en vez de rodeados.</p>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>🐗 Smashers, Flingers, Takers y Blasters</h3><p class="teaser">Comportamiento y cómo cancelar cada amenaza especial.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p><strong>Smashers</strong> cargan en línea recta contra estructuras u objetivos. Su embestida puede <strong>cancelarse</strong> con suficiente control de masas (empuje, aturdimiento) aplicado antes de que complete la carga, o ralentizando su aproximación con Alquitrán para que el resto de la base los elimine antes del impacto.</p>
+          <p><strong>Flingers</strong> lanzan objetos explosivos a distancia contra estructuras y jugadores. <strong>Takers</strong> saltan sobre el objetivo con un ataque aéreo de área. <strong>Blasters</strong> son atacantes a distancia que priorizan mantener rango antes que acercarse cuerpo a cuerpo, por lo que conviene eliminarlos primero o bloquear su línea de visión con estructuras.</p>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>🔺 Tabla de elementos y multiplicadores</h3><p class="teaser">Fuego, Naturaleza, Agua y Energía: fortalezas y debilidades.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>Elemento del arma</th><th>Fuerte contra</th><th>Débil contra</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tag fire">🔥 Fuego</span></td><td>Madera</td><td>Agua</td></tr>
+              <tr><td><span class="tag nature">🌿 Naturaleza</span></td><td>Metal</td><td>Fuego</td></tr>
+              <tr><td><span class="tag water">💧 Agua</span></td><td>Piedra</td><td>Naturaleza</td></tr>
+              <tr><td><span class="tag energy">⚡ Energía</span></td><td>Neutral, eficiente contra escudos y estructuras (~75% de efectividad general)</td><td>—</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p style="font-size:.88rem;color:var(--muted);">Ciclo de debilidad: Fuego → Agua → Naturaleza → Fuego. La Energía se mantiene como comodín constante, sin bonus ni penalización marcada.</p>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>🌀 Modificadores de misión</h3><p class="teaser">Tormentas, Explosión de Muerte y Vampirismo.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <ul>
+            <li><strong>Tormentas</strong> — reducen visibilidad y pueden invocar oleadas adicionales o dañar directamente a jugadores fuera de refugio.</li>
+            <li><strong>Explosión de Muerte</strong> — los Husks afectados detonan al morir, dañando estructuras y jugadores cercanos; obliga a espaciar las trampas de impacto final.</li>
+            <li><strong>Vampirismo</strong> — los enemigos curan una parte del daño que infligen, penalizando las builds sin control de masas que dependan de recibir pocos golpes.</li>
+          </ul>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: RECURSOS -->
+  <section class="panel" id="recursos">
+    <div class="section-head reveal" style="background-image:url('https://images.unsplash.com/photo-1610337673044-720471f83677?auto=format&fit=crop&w=1600&q=80');">
+      <span class="idx">SECCIÓN 04</span>
+      <h2>Economía de Recursos y Evolución de Esquemas</h2>
+      <p>Qué material buscar según el tier de tu esquema y cuándo conviene sacrificar cadencia por durabilidad.</p>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>⛏️ Materiales de evolución por tier</h3><p class="teaser">De materiales básicos a Rayo de Sol, tier por tier.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>Tier</th><th>Rareza objetivo</th><th>Material representativo</th></tr></thead>
+            <tbody>
+              <tr><td>Tier 1–2</td><td>Poco Común / Raro</td><td>Materiales básicos de mundo abierto (mineral, madera, mecanismos simples)</td></tr>
+              <tr><td>Tier 3</td><td>Épico</td><td><strong>Malaquita</strong> y componentes mecánicos intermedios</td></tr>
+              <tr><td>Tier 4</td><td>Legendario</td><td><strong>Pizarrabrillante (Shadowshard)</strong> y aleaciones avanzadas</td></tr>
+              <tr><td>Tier 5</td><td>Mítico / tope de evolución</td><td><strong>Rayo de Sol (Sunbeam)</strong>, el material de más alto nivel de minado</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>⚖️ Obsidiana vs. Pizarrabrillante</h3><p class="teaser">Cuándo priorizar cadencia/durabilidad o daño por impacto.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <div class="grid-2">
+            <div>
+              <h4>Elige Pizarrabrillante cuando…</h4>
+              <p style="font-size:.92rem;">Tu arma depende de <strong>cadencia de disparo y durabilidad sostenida</strong> —rifles automáticos, subfusiles— porque estas armas se benefician más de aguantar más golpes/disparos totales antes de romperse que de un pico de daño por impacto.</p>
+            </div>
+            <div>
+              <h4>Elige Obsidiana/Rayo de Sol cuando…</h4>
+              <p style="font-size:.92rem;">Tu arma vive del <strong>daño por impacto individual</strong> —francotiradores, escopetas, armas cuerpo a cuerpo pesadas— donde cada golpe cuenta más que la cantidad total de golpes posibles.</p>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>🔧 Re-Perk y configuración elemental</h3><p class="teaser">El orden correcto de prioridades al re-tirar perks.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>El Re-Perk permite volver a tirar los perks secundarios de un arma o trampa sin perder su nivel y evolución. Para armas de daño elemental, la prioridad de reroll suele ser: <strong>1)</strong> el elemento correcto para el contenido que vas a jugar, <strong>2)</strong> daño crítico o probabilidad crítica, <strong>3)</strong> perks de utilidad (recarga, estabilidad, munición).</p>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: SUPERVIVIENTES -->
+  <section class="panel" id="supervivientes">
+    <div class="section-head reveal" style="background-image:url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80');">
+      <span class="idx">SECCIÓN 05</span>
+      <h2>Escuadrón de Supervivientes y Nivel de Poder</h2>
+      <p>El sistema F.O.R.T. y cómo elegir líderes míticos que maximicen tu Nivel de Poder de escuadrón.</p>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>📊 Sistema F.O.R.T.</h3><p class="teaser">Fortaleza, Ofensiva, Resistencia y Tecnología explicados.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Cada uno de los cuatro escuadrones de supervivientes corresponde a un atributo del héroe:</p>
+          <div class="grid-2">
+            <ul style="margin:0;">
+              <li><strong>F</strong>ortaleza — vida y resistencia general</li>
+              <li><strong>O</strong>fensiva — daño infligido</li>
+            </ul>
+            <ul style="margin:0;">
+              <li><strong>R</strong>esistencia — daño reducido y supervivencia</li>
+              <li><strong>T</strong>ecnología — trampas y utilidades</li>
+            </ul>
+          </div>
+          <p style="margin-top:14px;">El Nivel de Poder final del escuadrón surge de combinar el nivel del líder, el nivel de los supervivientes que coinciden en personalidad con ese líder, y las ventajas de escuadrón desbloqueadas por completar el set.</p>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>👑 Líderes Míticos y compatibilidad de personalidad</h3><p class="teaser">Por qué la Durabilidad de Trampas es la bonificación más valorada.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Cada superviviente tiene una <strong>personalidad</strong> (ej. Comprometido/a, Analítico/a, Corredor de riesgos) que puede coincidir o entrar en conflicto con la del líder mítico de su escuadrón. Emparejar personalidades compatibles otorga una bonificación adicional de F.O.R.T. respecto a colocar un superviviente de personalidad no afín.</p>
+          <div class="note"><strong>Por qué la Durabilidad de Trampas es la bonificación más valorada:</strong> a diferencia de bonos de daño puntuales, la durabilidad de trampas se multiplica por cada trampa del túnel y por cada oleada jugada, así que su impacto acumulado en sesiones largas (Escudo Antitormenta, Aventuras) supera a bonos de daño que solo aplican a un arma o clase específica.</div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: LORE -->
+  <section class="panel" id="lore">
+    <div class="section-head reveal" style="background-image:url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1600&q=80');">
+      <span class="idx">SECCIÓN 06 · ARCHIVO</span>
+      <h2>Archivo Histórico y Lore Profundo</h2>
+      <p>Una enciclopedia de referencia sobre la historia de Salvar el Mundo: personajes, regiones, origen de la Tormenta, eventos y los misterios que siguen sin una respuesta definitiva.</p>
+    </div>
+
+    <div class="card-plain reveal">
+      <div class="grid-3">
+        <div><span class="tag purple">PERSONAJES</span><p style="margin:6px 0 0;font-size:.9rem;">Homebase, sus aliados y las figuras que construyeron la tecnología contra la Tormenta.</p></div>
+        <div><span class="tag gold">CAMPAÑA</span><p style="margin:6px 0 0;font-size:.9rem;">Bosque Pedregoso → Villatabla → Valle Latoso → Cumbres Leñosas.</p></div>
+        <div><span class="tag fire">MISTERIO</span><p style="margin:6px 0 0;font-size:.9rem;">La Tormenta, los Cubos, Vinderman y preguntas que el juego nunca cerró completamente.</p></div>
+      </div>
+    </div>
+
+    <div class="accordion">
+
+      <!-- PERSONAJES -->
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>📖 Personajes Centrales y Secundarios</h3>
+            <p class="teaser">Ray, Pop, Lok, Lars, Dennis, Clip, Director Riggs, Mayor Oswald, Rigby, Desiree y Dr. Vinderman.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <div class="grid-2">
+            <div>
+              <h4>Ray</h4>
+              <p>Ray es una de las presencias más constantes de Homebase y la principal voz que acompaña al comandante durante buena parte de la campaña. Es una inteligencia artificial con una personalidad extremadamente expresiva: combina conocimiento técnico, preocupación por los supervivientes y un fuerte apego emocional a la misión.</p>
+              <p>Su papel no se limita a dar instrucciones. Ray interpreta información de sensores, ayuda a coordinar operaciones y funciona como puente entre el jugador y el resto de Homebase. Su relación con el comandante es progresivamente más personal, especialmente cuando la historia empieza a revelar que Homebase no está luchando simplemente por recuperar territorio, sino intentando comprender qué ocurrió con el mundo.</p>
+            </div>
+            <div>
+              <h4>Pop</h4>
+              <p>Pop representa una de las caras más humanas y desenfadadas de los supervivientes. Sus intervenciones ayudan a romper la tensión de la campaña y muestran que, incluso después del colapso mundial, las personas siguen conservando rutinas, humor y vínculos sociales.</p>
+              <p>Su valor narrativo está precisamente en ese contraste: la historia de Salvar el Mundo no está poblada únicamente por científicos y grandes figuras. Personajes como Pop muestran cómo la catástrofe afecta a personas comunes que intentan seguir viviendo dentro de un mundo dominado por la Tormenta.</p>
+            </div>
+            <div>
+              <h4>Lok</h4>
+              <p>Lok es un personaje vinculado a las investigaciones y operaciones de Homebase. Su presencia contribuye a la dimensión científica del conflicto: la Tormenta no se trata como un fenómeno meteorológico convencional, sino como algo que exige investigación, tecnología y una comprensión que todavía está incompleta.</p>
+              <p>También representa una de las constantes del lore: Homebase aprende mientras combate. La información disponible nunca es suficiente para explicar de inmediato qué es la Tormenta o por qué determinados fenómenos asociados a ella se comportan como lo hacen.</p>
+            </div>
+            <div>
+              <h4>Lars</h4>
+              <p>Lars es el líder de la banda de Homebase y uno de los personajes más reconocibles de las historias secundarias. Su grupo viaja y participa en operaciones mientras intenta mantener viva la música y la identidad cultural de los supervivientes.</p>
+              <p>Su arco funciona como recordatorio de que sobrevivir no significa únicamente construir paredes y matar Husks. La comunidad también necesita entretenimiento, memoria y una razón para seguir comportándose como una sociedad. Lars y su banda convierten ese tema en parte explícita del tono de Salvar el Mundo.</p>
+            </div>
+            <div>
+              <h4>Dennis</h4>
+              <p>Dennis es el cocinero de Homebase y una fuente recurrente de humor. Su personalidad impulsiva y sus problemas cotidianos contrastan con la escala apocalíptica de la historia.</p>
+              <p>Su importancia aumenta cuando las historias de Homebase se alejan de la campaña principal: Dennis aparece en tramas que convierten situaciones aparentemente absurdas —comida, restaurantes, amistades y rivalidades— en pequeñas historias sobre cómo los supervivientes intentan recuperar una vida normal.</p>
+            </div>
+            <div>
+              <h4>Clip</h4>
+              <p>Clip es la especialista en fabricación y modificación de armas y herramientas. Su función narrativa conecta directamente la supervivencia cotidiana con la economía de materiales y la tecnología que utiliza el comandante.</p>
+              <p>Es una figura especialmente útil para entender la lógica interna de Homebase: los recursos encontrados durante las misiones no son simplemente objetos de videojuego; dentro de la ficción son componentes que pueden convertirse en armas, trampas y equipamiento capaces de mantener con vida a los supervivientes.</p>
+            </div>
+            <div>
+              <h4>Director Riggs</h4>
+              <p>Riggs está ligado a la dirección y coordinación de operaciones de Homebase. Su presencia refuerza la idea de que la resistencia necesita una estructura organizada y que cada misión forma parte de un esfuerzo mayor.</p>
+              <p>Los personajes administrativos y de coordinación cumplen una función importante: muestran que el comandante no actúa en un vacío. Hay una red de personas, sistemas y decisiones detrás de cada defensa del Escudo Antitormenta.</p>
+            </div>
+            <div>
+              <h4>Mayor Oswald</h4>
+              <p>El Mayor Oswald pertenece a la generación de personajes que conectan la supervivencia con la organización de las comunidades. Sus historias aportan una perspectiva menos científica y más institucional sobre el mundo posterior a la aparición de la Tormenta.</p>
+              <p>Su presencia sirve para recordar que el desastre no eliminó automáticamente todas las estructuras sociales. Las comunidades siguen necesitando autoridad, coordinación, suministros y personas capaces de tomar decisiones bajo presión.</p>
+            </div>
+            <div>
+              <h4>Rigby</h4>
+              <p>Rigby aparece dentro del conjunto de personajes secundarios que amplían la vida cotidiana alrededor de Homebase. Su valor narrativo está en aportar contexto humano a un escenario que podría reducirse fácilmente a una sucesión de combates.</p>
+              <p>Estas historias pequeñas son importantes para el tono general: el mundo de Salvar el Mundo está compuesto por supervivientes con objetivos, problemas y personalidades propias, no únicamente por soldados esperando la siguiente oleada.</p>
+            </div>
+            <div>
+              <h4>Desiree</h4>
+              <p>Desiree forma parte del reparto que amplía la historia más allá del núcleo principal. Sus apariciones ayudan a construir la sensación de que Homebase interactúa con una población superviviente mucho mayor de lo que muestran las escenas centradas exclusivamente en el comandante.</p>
+              <p>Como ocurre con otros personajes secundarios, su función principal es expandir el mundo: las consecuencias de la Tormenta se entienden mejor cuando se observan desde diferentes vidas y comunidades.</p>
+            </div>
+            <div>
+              <h4>Dr. Vinderman</h4>
+              <p>El Dr. Vinderman es una de las figuras científicas fundamentales del trasfondo. Su legado está estrechamente relacionado con la tecnología que precede y acompaña a la lucha contra la Tormenta. Su nombre aparece ligado a sistemas, investigaciones y decisiones que resultan cruciales para comprender cómo la humanidad llegó a tener herramientas capaces de resistir.</p>
+              <p>La importancia de Vinderman no depende únicamente de cuánto aparece físicamente en pantalla. Gran parte de su peso narrativo proviene de su legado y de las preguntas que deja abiertas: qué sabía realmente, hasta dónde llegó su investigación y qué consecuencias tuvieron sus decisiones. El lore convierte así su legado científico en una pieza central del misterio.</p>
+            </div>
+          </div>
+
+          <div class="note">
+            <strong>Lectura del lore:</strong>&nbsp;los personajes de Salvar el Mundo cumplen dos funciones a la vez. Los protagonistas impulsan la campaña; los secundarios hacen que el apocalipsis tenga escala humana. Separar ambas capas hace que la historia parezca más simple de lo que realmente es.
+          </div>
+        </div></div>
+      </div>
+
+      <!-- REGIONES -->
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>🗺️ Regiones de Campaña y Trasfondo</h3>
+            <p class="teaser">La progresión narrativa de Bosque Pedregoso, Villatabla, Valle Latoso y Cumbres Leñosas.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <div class="grid-2">
+            <div>
+              <span class="tag purple">01 · STONEWOOD</span>
+              <h4>Bosque Pedregoso</h4>
+              <p>Es el punto de entrada a la campaña y la región que establece el lenguaje básico del mundo: el jugador aprende a explorar, recolectar recursos, construir defensas y proteger objetivos mientras Homebase comienza a recuperar información sobre la situación mundial.</p>
+              <p>Narrativamente, funciona como una etapa de reconstrucción. La prioridad no es todavía comprender cada secreto de la Tormenta, sino establecer una base desde la que la humanidad pueda volver a organizarse. Las misiones presentan progresivamente las herramientas necesarias para sobrevivir y convierten al jugador en parte activa de la resistencia.</p>
+              <p>La importancia de Bosque Pedregoso es estructural: sin esta fase de aprendizaje y consolidación, las regiones posteriores carecerían del contraste necesario para mostrar cuánto ha aumentado la amenaza.</p>
+            </div>
+            <div>
+              <span class="tag gold">02 · PLANKERTON</span>
+              <h4>Villatabla</h4>
+              <p>Villatabla amplía el conflicto. Homebase ya no está únicamente intentando establecerse: comienza a intervenir en problemas más complejos y a relacionarse con más supervivientes y comunidades.</p>
+              <p>La región tiene un peso especial por su mayor densidad de historias y personajes. Las operaciones dejan de sentirse como simples ejercicios de supervivencia y empiezan a formar una cadena de acontecimientos donde las decisiones de Homebase tienen consecuencias más amplias.</p>
+              <p>También sirve como transición entre la introducción y el conflicto de mayor escala. El jugador ya conoce la construcción, los héroes y las defensas; la narrativa puede dedicar más espacio a preguntas sobre la Tormenta y sobre la tecnología disponible.</p>
+            </div>
+            <div>
+              <span class="tag fire">03 · CANNY VALLEY</span>
+              <h4>Valle Latoso</h4>
+              <p>Valle Latoso lleva a Homebase a un escenario de mayor escala y dificultad. La campaña profundiza en el misterio de la Tormenta y comienza a tratar el fenómeno como una amenaza que tiene una estructura y un comportamiento que la humanidad todavía no comprende completamente.</p>
+              <p>Uno de sus grandes ejes narrativos es la investigación que conduce hacia el <strong>Rey de la Tormenta</strong>. El jugador deja de enfrentarse únicamente a manifestaciones de la Tormenta y empieza a acercarse a una figura que representa una concentración extraordinaria de su poder.</p>
+              <p>El Rey de la Tormenta no es simplemente «un enemigo más grande»: narrativamente funciona como una evidencia de que detrás de la amenaza existe algo que supera la escala de una tormenta convencional. La campaña utiliza esta región para preparar al jugador para ese salto conceptual.</p>
+            </div>
+            <div>
+              <span class="tag energy">04 · TWINE PEAKS</span>
+              <h4>Cumbres Leñosas</h4>
+              <p>Cumbres Leñosas representa el tramo de cierre de la campaña original. El tono se vuelve más exigente y la progresión acumulada del jugador empieza a ponerse a prueba en contenido de mayor Nivel de Poder.</p>
+              <p>La región funciona como una culminación de los sistemas aprendidos: construcción, trampas, escuadrones, gestión de recursos y coordinación. El conflicto ya no parece una emergencia local; la supervivencia depende de una organización capaz de operar a una escala mucho mayor.</p>
+              <p>Su papel histórico también es importante. Durante años, Cumbres Leñosas fue asociada con el punto donde terminaba la campaña disponible, dejando una separación clara entre «la historia» y el contenido de largo plazo que vendría después.</p>
+            </div>
+          </div>
+
+          <div class="note">
+            <strong>Progresión narrativa:</strong>&nbsp;Bosque Pedregoso enseña a sobrevivir; Villatabla amplía el mundo; Valle Latoso profundiza en la amenaza; Cumbres Leñosas lleva la campaña a su escala más exigente. Es una progresión tanto mecánica como narrativa.
+          </div>
+        </div></div>
+      </div>
+
+      <!-- TORMENTA -->
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>🌩️ Origen y Naturaleza de la Tormenta</h3>
+            <p class="teaser">El 98%, los Cubos/Kevin, el Rey de la Tormenta, Vinderman y los misterios que permanecen abiertos.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <div class="note warn">
+            <strong>Importante:</strong>&nbsp;el canon de Salvar el Mundo no proporciona una explicación exhaustiva y definitiva de cada aspecto de la Tormenta. Esta sección separa hechos narrativos establecidos de interpretaciones y preguntas abiertas.
+          </div>
+
+          <h4>La desaparición del 98%</h4>
+          <p>La aparición de la Tormenta provoca un colapso mundial de proporciones catastróficas. La cifra del <strong>98%</strong> se utiliza para describir la magnitud de la pérdida de población humana: la civilización queda prácticamente destruida y los supervivientes deben refugiarse y organizarse mientras las criaturas de la Tormenta ocupan enormes extensiones del planeta.</p>
+          <p>La cifra también explica por qué Homebase tiene una misión que va más allá de defender una sola instalación. La organización intenta reconstruir una infraestructura humana funcional en un mundo donde la población y los sistemas de comunicación han quedado diezmados.</p>
+
+          <h4>¿Qué es realmente la Tormenta?</h4>
+          <p>La Tormenta no se comporta como una tormenta meteorológica normal. Está asociada con la aparición de Husks, fenómenos energéticos, alteraciones del entorno y estructuras conocidas como Cubos. Su comportamiento puede afectar extensiones enormes del planeta y parece responder a reglas que la ciencia convencional no explica por completo.</p>
+          <p>Por eso el conflicto tiene dos niveles: uno militar —defender a los supervivientes— y otro científico —descubrir qué es el fenómeno y cómo detenerlo—. La campaña avanza en ambos frentes.</p>
+
+          <h4>Los Cubos y Kevin</h4>
+          <p>Los Cubos son objetos oscuros asociados a la energía de la Tormenta. Su comportamiento y sus propiedades los convierten en uno de los elementos más extraños del lore. El Cubo conocido popularmente como <strong>Kevin</strong> se convirtió en una figura especialmente reconocible debido a sus apariciones y a la forma en que interactúa con el entorno y los personajes.</p>
+          <p>El nombre «Kevin» es un apodo de la comunidad que terminó incorporándose de forma natural a la conversación alrededor del fenómeno. Los Cubos funcionan como evidencia de que la Tormenta posee manifestaciones físicas concretas y no es simplemente una condición atmosférica.</p>
+
+          <h4>El Rey de la Tormenta</h4>
+          <p>El Rey de la Tormenta es la manifestación de mayor escala del poder de la Tormenta dentro de la campaña y del contenido de end-game. Su existencia cambia la interpretación del conflicto: la humanidad no solo está intentando sobrevivir a un fenómeno, sino enfrentándose a una entidad o concentración de poder capaz de dominar una zona entera.</p>
+          <p>El encuentro del Rey de la Tormenta convierte las investigaciones acumuladas durante la campaña en una amenaza concreta. La versión Mítica, además, transforma el concepto en una de las pruebas mecánicas más duras de Salvar el Mundo.</p>
+
+          <h4>Vinderman y la tecnología</h4>
+          <p>El legado del Dr. Vinderman está conectado con la tecnología que permite a la humanidad resistir y estudiar la amenaza. La relación entre su investigación, Homebase y la respuesta tecnológica contra la Tormenta es uno de los pilares del trasfondo.</p>
+          <p>La tecnología de Vinderman representa una idea central del lore: la humanidad no sobrevive únicamente por fuerza bruta. Sensores, sistemas de defensa, energía, comunicaciones y armamento especializado son necesarios para crear zonas relativamente seguras en un mundo dominado por la Tormenta.</p>
+
+          <h4>Misterios sin resolver</h4>
+          <div class="grid-2">
+            <div>
+              <ul>
+                <li><strong>Naturaleza completa de la Tormenta:</strong> el juego deja aspectos fundamentales de su origen y funcionamiento sin una explicación total.</li>
+                <li><strong>Los Cubos:</strong> sus propiedades, origen y relación exacta con la Tormenta no quedan explicados de forma exhaustiva.</li>
+                <li><strong>Vinderman:</strong> su investigación y su legado plantean preguntas sobre cuánto sabía y qué ocurrió realmente con su trabajo.</li>
+              </ul>
+            </div>
+            <div>
+              <ul>
+                <li><strong>El Rey de la Tormenta:</strong> su naturaleza exacta y su relación con el fenómeno general siguen siendo terreno de interpretación.</li>
+                <li><strong>El mundo exterior:</strong> el 98% de pérdida plantea preguntas sobre comunidades, regiones y estructuras que la historia nunca explora por completo.</li>
+                <li><strong>El final:</strong> la evolución de Salvar el Mundo hacia contenido recurrente dejó parte de la historia en un estado deliberadamente incompleto.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="note">
+            <strong>Canon vs. teoría:</strong>&nbsp;una enciclopedia seria no debe presentar una hipótesis como hecho. Cuando el juego no establece una respuesta, lo correcto es marcarla como misterio o interpretación, no rellenar el vacío con una explicación inventada.
+          </div>
+        </div></div>
+      </div>
+
+      <!-- EVENTOS -->
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>🎭 Eventos de Temporada e Historias Secundarias</h3>
+            <p class="teaser">Frostnite, Dungeons, Noches de Pesadilla, Calamidad, Piratas y Aventuras.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <div class="grid-2">
+            <div>
+              <h4>❄️ Frostnite</h4>
+              <p>Frostnite es uno de los eventos estacionales más importantes de Salvar el Mundo. Homebase debe mantener vivo un <strong>Quemador</strong> mientras resiste oleadas en un entorno nevado. La estructura del evento cambia la lógica habitual de las misiones: los recursos son especialmente importantes, la construcción debe ser eficiente y cada decisión tiene un coste durante una supervivencia prolongada.</p>
+              <p>Su identidad narrativa mezcla la estética navideña con una situación de supervivencia real. El resultado es una historia secundaria que no necesita alterar el conflicto principal para aportar una experiencia distinta y memorable.</p>
+            </div>
+            <div>
+              <h4>🏰 Dungeons</h4>
+              <p>Dungeons introduce una estructura de mazmorra que se aleja del formato tradicional de los mapas de campaña. El jugador explora zonas conectadas, encuentra recursos y combate enemigos mientras avanza hacia objetivos y jefes.</p>
+              <p>El interés narrativo está en su carácter de excursión fuera de la estructura normal de Homebase. Más que continuar linealmente la campaña principal, Dungeons utiliza el universo de Salvar el Mundo para construir una experiencia temática independiente.</p>
+            </div>
+            <div>
+              <h4>🎃 Noches de Pesadilla · Hexsylvania</h4>
+              <p>Hexsylvania es la interpretación de Halloween de Salvar el Mundo. La región sustituye el tono habitual por una ambientación sobrenatural: castillos, niebla, criaturas temáticas y misiones con una identidad propia.</p>
+              <p>Las historias de Noches de Pesadilla demuestran una característica importante del diseño narrativo de STW: el universo puede adoptar géneros temporales —terror, comedia, fantasía— sin dejar de utilizar sus sistemas de combate y construcción.</p>
+            </div>
+            <div>
+              <h4>🌵 Calamidad</h4>
+              <p>La saga de <strong>Calamidad</strong> explora el imaginario del Oeste dentro de Salvar el Mundo. Homebase se encuentra con personajes y conflictos que utilizan pueblos fronterizos, forajidos y estética western como marco para una historia secundaria.</p>
+              <p>Su función es ampliar el universo sin depender de la progresión geográfica de la campaña. Calamidad demuestra que el mundo de STW puede contar historias con identidades visuales y tonales completamente diferentes.</p>
+            </div>
+            <div>
+              <h4>🏴‍☠️ Piratas · Plankerton Cove</h4>
+              <p>La temática pirata transforma las operaciones en una aventura de búsqueda y exploración. <strong>Plankerton Cove</strong> utiliza el imaginario de piratas, tesoros y navegación como contexto para misiones y personajes secundarios.</p>
+              <p>Como otros eventos, su valor no reside solamente en las recompensas. Amplía la percepción del jugador sobre el mundo: incluso durante el apocalipsis existen comunidades que reinterpretan su vida y sus problemas mediante sus propias tradiciones y aventuras.</p>
+            </div>
+            <div>
+              <h4>🚚 Aventuras y sagas recurrentes</h4>
+              <p>Las historias de Aventuras —Ventures— representan una etapa distinta en la evolución de Salvar el Mundo. En lugar de ser una continuación lineal de las regiones principales, Aventuras funciona como un sistema recurrente de progresión con una zona, reglas y progresión propias.</p>
+              <p>Las sagas y eventos recurrentes permiten reutilizar el universo narrativo sin pretender que cada temporada sea un capítulo definitivo de la campaña. Esto explica por qué el STW moderno se siente parcialmente como una enciclopedia de historias independientes: el juego pasó de una estructura de campaña cerrada a una experiencia de largo plazo.</p>
+            </div>
+          </div>
+
+          <h4>Cómo encajan estas historias en el canon</h4>
+          <p>Los eventos no deben leerse todos como capítulos equivalentes de la campaña principal. Algunos amplían personajes; otros son celebraciones estacionales; otros crean escenarios y reglas especiales. Su importancia histórica está en mostrar la amplitud del universo de Salvar el Mundo y cómo Homebase continuó existiendo como escenario narrativo incluso cuando la campaña principal dejó de avanzar al ritmo esperado.</p>
+
+          <div class="note">
+            <strong>Hilo común:</strong>&nbsp;Frostnite enfatiza supervivencia; Dungeons, exploración; Hexsylvania, terror; Calamidad, western; Piratas, aventura; y Ventures, progresión recurrente. Son variaciones del mismo universo, no necesariamente piezas de una única línea argumental continua.
+          </div>
+        </div></div>
+      </div>
+
+      <!-- CRONOLOGÍA -->
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>🕰️ Cronología y evolución del juego</h3>
+            <p class="teaser">De la campaña original a los eventos, rework de héroes y Aventuras.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <ol>
+            <li><strong>Inicio de la campaña:</strong> el jugador entra en un mundo devastado y comienza a construir Homebase mientras aprende las reglas de supervivencia.</li>
+            <li><strong>Expansión regional:</strong> Bosque Pedregoso, Villatabla, Valle Latoso y Cumbres Leñosas amplían progresivamente el conflicto.</li>
+            <li><strong>Rework de Héroes:</strong> la actualización 8.0 rediseñó de forma profunda el sistema de héroes, estableciendo la estructura moderna de Comandante, Apoyo y Ventajas de Equipo.</li>
+            <li><strong>Frostnite y eventos:</strong> el juego comenzó a utilizar eventos temáticos como una segunda vía narrativa y jugable, separada de la progresión geográfica de la campaña.</li>
+            <li><strong>Dungeons:</strong> las mazmorras consolidaron la capacidad de STW para crear modos con reglas y estructuras diferentes.</li>
+            <li><strong>Hit the Road:</strong> Homebase amplía sus operaciones y el formato de viaje se convierte en otro vehículo para contar historias.</li>
+            <li><strong>Aventuras (Ventures):</strong> el juego adopta un modelo recurrente de zonas y progresión, alejándose de la idea de que cada nuevo contenido tiene que ser una continuación directa de la campaña.</li>
+          </ol>
+          <div class="note">
+            <strong>Lectura histórica:</strong>&nbsp;la historia de Salvar el Mundo tiene dos cronologías superpuestas: la cronología ficticia de Homebase y la historia real del desarrollo del juego. Confundirlas produce muchas de las contradicciones que aparecen en discusiones del lore.
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ESTADO DEL CANON -->
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext">
+            <h3>🔍 Estado del canon y misterios</h3>
+            <p class="teaser">Qué puede afirmarse con seguridad y dónde empieza la interpretación.</p>
+          </div>
+          <span class="acc-toggle"><span class="tlabel"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <table>
+            <thead><tr><th>Nivel</th><th>Qué significa</th><th>Ejemplo</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tag gold">CANON</span></td><td>La historia o el juego lo establece explícitamente.</td><td>La humanidad sufrió una pérdida catastrófica y Homebase lucha contra la Tormenta.</td></tr>
+              <tr><td><span class="tag purple">IMPLÍCITO</span></td><td>La información encaja claramente con el mundo, pero no resuelve todos los detalles.</td><td>La tecnología de Vinderman está relacionada con la capacidad de resistencia de Homebase.</td></tr>
+              <tr><td><span class="tag fire">TEORÍA</span></td><td>Una interpretación de la comunidad que intenta explicar un vacío.</td><td>Explicaciones definitivas sobre el origen último de la Tormenta cuando el juego no las establece.</td></tr>
+            </tbody>
+          </table>
+          <p>La mayor virtud de una enciclopedia de lore no es tener una respuesta para absolutamente todo. Es saber exactamente dónde termina la evidencia. En Salvar el Mundo existen suficientes piezas para construir una historia coherente, pero también suficientes huecos para que algunas conclusiones sigan siendo interpretaciones.</p>
+        </div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="panel" id="endgame">
+    <div class="section-head reveal" style="background-image:url('https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=1600&q=80');">
+      <span class="idx">SECCIÓN 07</span>
+      <h2>Guías End-Game y Desafíos Extremos</h2>
+      <p>Las dos pruebas de fuego del modo: la carrera contrarreloj del Rey de la Tormenta Mítico y la maratón de resistencia del Escudo Antitormenta.</p>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>👑 Rey de la Tormenta Mítico — guía por fases</h3><p class="teaser">Cristales, Cuernos y Fase Final: el orden correcto.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <ol>
+            <li><strong>Fase de Cristales</strong> — el objetivo es destruir los cristales que protegen al jefe mientras se contiene a los Husks que los defienden; prioriza armas de daño sostenido en área.</li>
+            <li><strong>Fase de Cuernos</strong> — el MSK expone puntos débiles (cuernos) que hay que destruir en una ventana de tiempo limitada; el daño de precisión y las armas de alto daño por impacto rinden más aquí.</li>
+            <li><strong>Fase Final</strong> — combate directo contra el núcleo del jefe con el reloj corriendo; el escuadrón debe llegar con munición y cargas especiales reservadas de las fases anteriores.</li>
+          </ol>
+          <p><strong>Armas meta históricas:</strong> <span class="tag purple">Furia</span> <span class="tag purple">Azote</span> <span class="tag purple">Xenón</span> — valoradas por su alto daño sostenido dentro de la ventana de 10 minutos que impone el temporizador del encuentro.</p>
+          <div class="note warn"><strong>Gestión del temporizador:</strong> perder tiempo reconstruyendo estructura en vez de dañar al jefe es el error más común que lleva a fallar el MSK justo antes de la fase final.</div>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>🌩️ Resistencia de Escudo Antitormenta (30 oleadas)</h3><p class="teaser">Construcción AFK y control de spawns rotativos.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>El objetivo es sobrevivir treinta oleadas consecutivas defendiendo el Escudo Antitormenta. Dos enfoques dominan la comunidad:</p>
+          <div class="grid-2">
+            <div>
+              <h4>Construcción AFK / semi-AFK</h4>
+              <p style="font-size:.92rem;">Bases diseñadas para que las trampas hagan la mayor parte del trabajo con mínima intervención del jugador, priorizando durabilidad de trampas y túneles de reciclaje que no requieran micromanejo constante.</p>
+            </div>
+            <div>
+              <h4>Control de spawns rotativos</h4>
+              <p style="font-size:.92rem;">Los puntos de aparición de enemigos rotan a medida que avanzan las oleadas; una base sólida cubre <strong>todos</strong> los ángulos de spawn con túneles propios en vez de defender un único frente, evitando que una oleada tardía llegue por un flanco descuidado.</p>
+            </div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <p class="no-results" id="noResults">No se encontraron resultados para tu búsqueda.</p>
+</main>
+
+<footer>
+  <p>Guía comunitaria no oficial sobre Fortnite: Salvar el Mundo, elaborada con información pública de Epic Games y la comunidad (r/FORTnITE, Discord). Fortnite es marca registrada de Epic Games, Inc. Imágenes de cabecera: Unsplash.</p>
+</footer>
+
+<script>
+(function(){
+  // ---- Fondo de niebla/partículas de la Tormenta (canvas) ----
+  var canvas = document.getElementById('fogCanvas');
+  var ctx = canvas.getContext('2d');
+  var particles = [];
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function makeParticle(){
+    return {
+      x: Math.random() * canvas.width,
+      y: canvas.height + Math.random() * 200,
+      r: 60 + Math.random() * 140,
+      speed: 0.15 + Math.random() * 0.35,
+      drift: (Math.random() - 0.5) * 0.3,
+      hue: Math.random() > 0.5 ? 'rgba(124,58,237,' : 'rgba(255,140,46,',
+      alpha: 0.02 + Math.random() * 0.05
+    };
+  }
+  var count = window.innerWidth < 700 ? 14 : 26;
+  for(var i=0;i<count;i++){ particles.push(makeParticle()); }
+
+  function tick(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(function(p){
+      p.y -= p.speed;
+      p.x += p.drift;
+      if(p.y < -p.r){ Object.assign(p, makeParticle()); p.y = canvas.height + p.r; }
+      var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+      grad.addColorStop(0, p.hue + p.alpha + ')');
+      grad.addColorStop(1, p.hue + '0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+    if(!reduceMotion){ requestAnimationFrame(tick); }
+  }
+  if(!reduceMotion){ requestAnimationFrame(tick); } else { tick(); }
+
+  // ---- Tabs ----
+  var tabs = document.querySelectorAll('.tab-btn');
+  var panels = document.querySelectorAll('.panel');
+  tabs.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      tabs.forEach(function(b){ b.classList.remove('active'); });
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      btn.classList.add('active');
+      var target = document.getElementById(btn.getAttribute('data-target'));
+      if(target){ target.classList.add('active'); }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      requestAnimationFrame(observeReveals);
+    });
+  });
+
+  // ---- Acordeón ----
+  document.querySelectorAll('.acc-header').forEach(function(header){
+    header.addEventListener('click', function(){
+      var item = header.closest('.acc-item');
+      var panel = item.querySelector('.acc-panel');
+      var isOpen = item.classList.contains('open');
+      if(isOpen){
+        panel.style.maxHeight = null;
+        item.classList.remove('open');
+      } else {
+        item.classList.add('open');
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // ---- Scroll reveal (IntersectionObserver) ----
+  var revealEls = document.querySelectorAll('.reveal');
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  function observeReveals(){
+    document.querySelectorAll('.hero .reveal:not(.in-view), .panel.active .reveal:not(.in-view)').forEach(function(el){ io.observe(el); });
+  }
+  observeReveals();
+
+  // ---- Element calculator ----
+  var elemBtns = document.querySelectorAll('.elem-btn');
+  var result = document.getElementById('calcResult');
+  var recommendation = {
+    fuego:      { rec: 'Agua 💧',       weak: 'El Fuego se apaga con Agua. Evita llevar armas de Naturaleza contra enemigos de Fuego.' },
+    naturaleza: { rec: 'Fuego 🔥',      weak: 'La Naturaleza se quema con Fuego. Evita Agua, es poco eficaz aquí.' },
+    agua:       { rec: 'Naturaleza 🌿', weak: 'El Agua es absorbida por la Naturaleza. Evita Fuego contra estos enemigos.' },
+    energia:    { rec: 'Energía ⚡ o crítico', weak: 'La Energía no tiene una debilidad marcada: usa tu arma de mayor daño crítico o Energía como comodín seguro.' }
+  };
+  elemBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      elemBtns.forEach(function(b){ b.classList.remove('selected'); });
+      btn.classList.add('selected');
+      var el = btn.getAttribute('data-el');
+      var data = recommendation[el];
+      result.innerHTML =
+        '<div class="rec-elem">Usa: ' + data.rec + '</div>' +
+        '<p style="margin:0 0 4px;">contra un enemigo de <strong>' + btn.textContent.trim() + '</strong></p>' +
+        '<div class="weak">' + data.weak + '</div>';
+    });
+  });
+
+  // ---- Search filter: filtra tarjetas del acordeón y las abre automáticamente ----
+  var searchInput = document.getElementById('searchInput');
+  var noResults = document.getElementById('noResults');
+  searchInput.addEventListener('input', function(){
+    var q = searchInput.value.trim().toLowerCase();
+
+    if(q === ''){
+      document.querySelectorAll('.acc-item').forEach(function(item){
+        item.classList.remove('hidden-by-search');
+      });
+      noResults.style.display = 'none';
+      return;
+    }
+
+    var anyMatch = false;
+    var firstMatchPanel = null;
+
+    document.querySelectorAll('.panel').forEach(function(panel){
+      panel.querySelectorAll('.acc-item').forEach(function(item){
+        var text = item.textContent.toLowerCase();
+        var matches = text.indexOf(q) !== -1;
+        item.classList.toggle('hidden-by-search', !matches);
+        if(matches){
+          anyMatch = true;
+          if(!firstMatchPanel) firstMatchPanel = panel;
+          var panelEl = item.querySelector('.acc-panel');
+          if(!item.classList.contains('open')){
+            item.classList.add('open');
+            panelEl.style.maxHeight = panelEl.scrollHeight + 'px';
+          }
+        }
+      });
+    });
+
+    if(firstMatchPanel){
+      tabs.forEach(function(b){ b.classList.remove('active'); });
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      firstMatchPanel.classList.add('active');
+      var matchingTab = document.querySelector('.tab-btn[data-target="' + firstMatchPanel.id + '"]');
+      if(matchingTab) matchingTab.classList.add('active');
+      requestAnimationFrame(observeReveals);
+    }
+
+    noResults.style.display = anyMatch ? 'none' : 'block';
+  });
+})();
+</script>
+
+</body>
+</html>
