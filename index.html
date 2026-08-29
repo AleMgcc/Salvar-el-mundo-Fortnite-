@@ -215,6 +215,7 @@
   .hero-stats div{ text-align:left; }
   .hero-stats .num{ font-family: var(--font-display); font-size:1.7rem; color:var(--gold); font-weight:700; text-shadow: 0 0 16px rgba(246,201,69,.5); }
   .hero-stats .label{ font-size:.75rem; color: var(--muted-2); text-transform:uppercase; letter-spacing:.08em; }
+  .hero-signature .num.contact{ font-size:1.25rem; letter-spacing:.02em; }
 
   /* ---------- LAYOUT ---------- */
   main{ max-width: 1080px; margin: 0 auto; padding: 50px 20px 110px; position:relative; z-index:1; }
@@ -345,6 +346,116 @@
   .calc-result .rec-elem{ font-family: var(--font-display); font-size:1.4rem; margin-bottom:6px; color: var(--gold); }
   .calc-result .weak{ color: var(--muted-2); font-size:.85rem; }
 
+  /* ---------- SIMULADOR DE PERKS DE TRAMPAS ---------- */
+  .tc-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 26px; align-items:start; }
+  @media (max-width: 760px){ .tc-grid{ grid-template-columns: 1fr; } }
+
+  .tc-field{ margin-bottom: 16px; }
+  .tc-field label{
+    display:block; font-family: var(--font-mono); font-size:.7rem; text-transform:uppercase;
+    letter-spacing:.06em; color: var(--muted-2); margin-bottom: 6px;
+  }
+  .tc-custom-select{ position:relative; width:100%; font-family:var(--font-body); }
+  .tc-custom-trigger{
+    width:100%; min-height:44px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    background:linear-gradient(180deg, rgba(20,24,43,.98), rgba(13,15,29,.98));
+    border:1px solid rgba(124,58,237,.38); color:var(--text); padding:10px 12px; border-radius:10px;
+    font:inherit; font-size:.9rem; text-align:left; cursor:pointer; transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tc-custom-trigger:hover,.tc-custom-select.open .tc-custom-trigger,.tc-custom-select:focus-within .tc-custom-trigger{
+    border-color:rgba(56,189,248,.7); box-shadow:0 0 0 3px rgba(56,189,248,.08), 0 0 18px rgba(124,58,237,.16);
+    background:linear-gradient(180deg, rgba(25,30,54,.99), rgba(15,18,35,.99));
+  }
+  .tc-custom-chevron{ color:var(--gold); font-size:1.15rem; line-height:1; transition:transform .2s ease; }
+  .tc-custom-select.open .tc-custom-chevron{ transform:rotate(180deg); }
+  .tc-custom-menu{
+    position:absolute; z-index:1000; left:0; right:0; top:calc(100% + 7px); display:none;
+    max-height:min(360px, 55vh); overflow-y:auto; padding:7px;
+    background:#0d0f1d; border:1px solid rgba(124,58,237,.5); border-radius:12px;
+    box-shadow:0 18px 45px rgba(0,0,0,.55), 0 0 24px rgba(56,189,248,.08);
+    overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
+  }
+  .tc-custom-select.open .tc-custom-menu{ display:block; animation:tcMenuIn .16s ease-out; }
+  @keyframes tcMenuIn{ from{opacity:0; transform:translateY(-4px)} to{opacity:1; transform:translateY(0)} }
+  .tc-option-group-label{
+    padding:7px 9px 5px; color:var(--gold); font-family:var(--font-mono); font-size:.64rem;
+    text-transform:uppercase; letter-spacing:.08em; opacity:.9;
+  }
+  .tc-option{
+    display:block; width:100%; border:0; border-radius:8px; padding:10px 10px; margin:2px 0;
+    background:transparent; color:#f5f7ff; font:inherit; font-size:.88rem; text-align:left; cursor:pointer;
+    transition:background .15s ease, color .15s ease, transform .12s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tc-option:hover,.tc-option:focus{ background:rgba(124,58,237,.22); color:#fff; outline:none; }
+  .tc-option:active{ background:rgba(56,189,248,.18); transform:scale(.99); }
+  .tc-option.selected{ background:linear-gradient(90deg, rgba(124,58,237,.3), rgba(56,189,248,.12)); color:var(--gold); box-shadow:inset 2px 0 0 var(--gold); }
+  .tc-option.disabled{ color:rgba(148,163,184,.42); cursor:not-allowed; background:transparent; text-decoration:line-through; }
+  .tc-option.disabled:hover,.tc-option.disabled:focus{ background:transparent; color:rgba(148,163,184,.42); }
+  .tc-custom-menu::-webkit-scrollbar{ width:7px; }
+  .tc-custom-menu::-webkit-scrollbar-track{ background:#0a0c17; border-radius:10px; }
+  .tc-custom-menu::-webkit-scrollbar-thumb{ background:rgba(124,58,237,.55); border-radius:10px; }
+  @media (max-width:480px){
+    .tc-custom-trigger{ font-size:1rem; min-height:46px; padding:11px 12px; }
+    .tc-custom-menu{ max-height:52vh; border-radius:11px; padding:6px; }
+    .tc-option{ font-size:.96rem; padding:12px 10px; min-height:44px; }
+  }
+
+  .tc-perk-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:12px; }
+  .tc-perk-slot label{
+    display:flex; align-items:center; gap:6px;
+  }
+  .tc-perk-slot label .slot-num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:16px; height:16px; border-radius:50%; background: var(--storm-purple); color:#fff;
+    font-size:.62rem; font-family: var(--font-mono);
+  }
+
+  .tc-summary{ display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; min-height: 26px; }
+
+  .tc-stats{ display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-bottom: 6px; }
+  @media (max-width: 600px){ .tc-stats{ grid-template-columns: 1fr; } }
+  .tc-stat{
+    background: var(--surface-solid); border:1px solid var(--border-soft); border-radius: 12px;
+    padding: 16px; text-align:center; transition: box-shadow .25s ease, border-color .25s ease;
+  }
+  .tc-stat:hover{ border-color: rgba(255,140,46,.35); box-shadow: 0 0 18px rgba(124,58,237,.25); }
+  .tc-stat .tc-stat-label{
+    font-family: var(--font-mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.06em;
+    color: var(--muted-2); margin-bottom: 6px;
+  }
+  .tc-stat .tc-stat-value{
+    font-family: var(--font-display); font-size:1.55rem; font-weight:700; color: var(--gold);
+    text-shadow: 0 0 14px rgba(246,201,69,.35);
+  }
+  .tc-stat .tc-stat-unit{ font-size:.9rem; color: var(--muted); margin-left:3px; }
+
+
+  .tc-actions{
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    flex-wrap:wrap; margin-top: 14px;
+  }
+  .tc-summary{ margin-top:0; flex:1; }
+  .tc-reset-btn{
+    flex-shrink:0; cursor:pointer; border:none; white-space:nowrap;
+    font-family: var(--font-display); font-weight:700; font-size:.78rem; letter-spacing:.03em; text-transform:uppercase;
+    color: var(--bg-deep); background: linear-gradient(135deg, var(--gold), var(--energy-orange));
+    padding: 9px 16px; border-radius: 999px;
+    box-shadow: 0 0 0 rgba(255,140,46,0); transition: box-shadow .3s ease, transform .15s ease;
+  }
+  .tc-reset-btn:hover{ box-shadow: 0 0 18px rgba(255,140,46,.55); transform: translateY(-1px); }
+  .tc-reset-btn:active{ transform: translateY(0); }
+
+  @media (max-width: 480px){
+    .tc-perk-grid{ grid-template-columns: 1fr; }
+    .tc-select{ font-size: 1rem; padding: 11px 12px; } /* evita zoom automático en iOS */
+    .tc-actions{ flex-direction: column; align-items: stretch; }
+    .tc-reset-btn{ width:100%; padding: 11px 16px; }
+    .hero-signature{ gap: 20px; }
+    .hero-signature .num.contact{ font-size:1.05rem; }
+  }
+
   .card-plain{
     background: var(--surface); border:1px solid var(--border-soft); border-radius: var(--radius);
     padding: 22px 24px; margin-bottom: 20px;
@@ -411,11 +522,9 @@
     <span class="eyebrow reveal"><span class="dot"></span> Guía comunitaria no oficial</span>
     <h1 class="reveal d1">La guía definitiva de<br>Salvar el Mundo</h1>
     <p class="lead reveal d2">Ventajas, trampas, IA de enemigos, economía de esquemas, supervivientes, lore y las estrategias de end-game que la comunidad de r/FORTnITE ha perfeccionado desde 2017.</p>
-    <div class="hero-stats reveal d3">
-      <div><div class="num">7</div><div class="label">Secciones</div></div>
-      <div><div class="num">4</div><div class="label">Elementos</div></div>
-      <div><div class="num">30</div><div class="label">Oleadas ESA</div></div>
-      <div><div class="num">10:00</div><div class="label">Temporizador MSK</div></div>
+    <div class="hero-stats hero-signature reveal d3">
+      <div><div class="num">AleMgc</div><div class="label">Creador</div></div>
+      <div><div class="num contact">+52 8123823090</div><div class="label">Contacto</div></div>
     </div>
   </div>
 </section>
@@ -567,6 +676,160 @@
       <span class="idx">SECCIÓN 02</span>
       <h2>Mecánicas Avanzadas de Trampas y Control de Masas</h2>
       <p>La física de empuje, el diseño de túneles y la optimización de perks que separan una base que aguanta de una que colapsa en la oleada 20.</p>
+    </div>
+
+    <div class="card-plain reveal">
+      <h3>🧮 Simulador de Perks de Trampas</h3>
+      <p>Elige una trampa y configura sus 5 ranuras de perks para ver cómo cambian su Durabilidad Total, Tiempo de Recarga y Daño Base en tiempo real. Cada perk solo puede ocupar una ranura a la vez, igual que en una trampa Legendaria (Nivel 130) real.</p>
+
+      <div class="tc-grid">
+        <!-- Configuración -->
+        <div>
+          <div class="tc-field">
+            <label for="tcTrapSelect">Trampa <span class="tc-trap-chip" id="tcTrapChip"></span></label>
+            <div id="tcTrapSelect" class="tc-custom-select" data-value="lanzador" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+              <button type="button" class="tc-custom-trigger" aria-label="Seleccionar trampa">
+                <span class="tc-custom-value">Lanzador de Pared</span><span class="tc-custom-chevron">⌄</span>
+              </button>
+              <div class="tc-custom-menu" role="listbox">
+                <div class="tc-option-group" data-cat="pared"><div class="tc-option-group-label">Pared</div>
+                  <button type="button" class="tc-option" role="option" data-value="lanzador">Lanzador de Pared</button>
+                  <button type="button" class="tc-option" role="option" data-value="dardos">Dardos de Pared</button>
+                  <button type="button" class="tc-option" role="option" data-value="dinamo_pared">Dínamo de Pared (Eléctrica)</button>
+                </div>
+                <div class="tc-option-group" data-cat="techo"><div class="tc-option-group-label">Techo</div>
+                  <button type="button" class="tc-option" role="option" data-value="electrico">Campo Eléctrico de Techo</button>
+                  <button type="button" class="tc-option" role="option" data-value="zapper_techo">Zapper de Techo</button>
+                </div>
+                <div class="tc-option-group" data-cat="suelo"><div class="tc-option-group-label">Suelo / Piso</div>
+                  <button type="button" class="tc-option" role="option" data-value="alquitran">Trampa de Alquitrán</button>
+                  <button type="button" class="tc-option" role="option" data-value="puas_suelo">Trampa de Púas de Suelo</button>
+                  <button type="button" class="tc-option" role="option" data-value="fuego_suelo">Parrilla de Fuego de Piso</button>
+                  <button type="button" class="tc-option" role="option" data-value="gas">Trampa de Gas</button>
+                  <button type="button" class="tc-option" role="option" data-value="congelacion">Trampa de Congelación</button>
+                  <button type="button" class="tc-option" role="option" data-value="dano_suelo">Trampa de Daño</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tc-field">
+            <label>Ranuras de Perks (5) · Legendario Nivel 130</label>
+            <div class="tc-perk-grid" id="tcPerkGrid">
+              <!-- Las 5 ranuras se generan por JS, pero se dejan aquí como fallback estático -->
+              <div class="tc-perk-slot">
+                <label><span class="slot-num">1</span> Ranura 1</label>
+                <div class="tc-custom-select tc-perk-select tc-enhance" data-slot="1" data-value="none" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+                  <button type="button" class="tc-custom-trigger" aria-label="Seleccionar perk para la ranura 1">
+                    <span class="tc-custom-value">— Vacía —</span><span class="tc-custom-chevron">⌄</span>
+                  </button>
+                  <div class="tc-custom-menu" role="listbox">
+                    <button type="button" class="tc-option" role="option" data-value="none">— Vacía —</button>
+                    <button type="button" class="tc-option" role="option" data-value="recarga">+ Velocidad de recarga</button>
+                    <button type="button" class="tc-option" role="option" data-value="impacto">+ Impacto</button>
+                    <button type="button" class="tc-option" role="option" data-value="durabilidad">+ Durabilidad</button>
+                    <button type="button" class="tc-option" role="option" data-value="dano">+ Daño</button>
+                    <button type="button" class="tc-option" role="option" data-value="estructura">+ Vida de estructura</button>
+                  </div>
+                </div>
+              </div>
+              <div class="tc-perk-slot">
+                <label><span class="slot-num">2</span> Ranura 2</label>
+                <div class="tc-custom-select tc-perk-select tc-enhance" data-slot="2" data-value="none" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+                  <button type="button" class="tc-custom-trigger" aria-label="Seleccionar perk para la ranura 2">
+                    <span class="tc-custom-value">— Vacía —</span><span class="tc-custom-chevron">⌄</span>
+                  </button>
+                  <div class="tc-custom-menu" role="listbox">
+                    <button type="button" class="tc-option" role="option" data-value="none">— Vacía —</button>
+                    <button type="button" class="tc-option" role="option" data-value="recarga">+ Velocidad de recarga</button>
+                    <button type="button" class="tc-option" role="option" data-value="impacto">+ Impacto</button>
+                    <button type="button" class="tc-option" role="option" data-value="durabilidad">+ Durabilidad</button>
+                    <button type="button" class="tc-option" role="option" data-value="dano">+ Daño</button>
+                    <button type="button" class="tc-option" role="option" data-value="estructura">+ Vida de estructura</button>
+                  </div>
+                </div>
+              </div>
+              <div class="tc-perk-slot">
+                <label><span class="slot-num">3</span> Ranura 3</label>
+                <div class="tc-custom-select tc-perk-select tc-enhance" data-slot="3" data-value="none" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+                  <button type="button" class="tc-custom-trigger" aria-label="Seleccionar perk para la ranura 3">
+                    <span class="tc-custom-value">— Vacía —</span><span class="tc-custom-chevron">⌄</span>
+                  </button>
+                  <div class="tc-custom-menu" role="listbox">
+                    <button type="button" class="tc-option" role="option" data-value="none">— Vacía —</button>
+                    <button type="button" class="tc-option" role="option" data-value="recarga">+ Velocidad de recarga</button>
+                    <button type="button" class="tc-option" role="option" data-value="impacto">+ Impacto</button>
+                    <button type="button" class="tc-option" role="option" data-value="durabilidad">+ Durabilidad</button>
+                    <button type="button" class="tc-option" role="option" data-value="dano">+ Daño</button>
+                    <button type="button" class="tc-option" role="option" data-value="estructura">+ Vida de estructura</button>
+                  </div>
+                </div>
+              </div>
+              <div class="tc-perk-slot">
+                <label><span class="slot-num">4</span> Ranura 4</label>
+                <div class="tc-custom-select tc-perk-select tc-enhance" data-slot="4" data-value="none" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+                  <button type="button" class="tc-custom-trigger" aria-label="Seleccionar perk para la ranura 4">
+                    <span class="tc-custom-value">— Vacía —</span><span class="tc-custom-chevron">⌄</span>
+                  </button>
+                  <div class="tc-custom-menu" role="listbox">
+                    <button type="button" class="tc-option" role="option" data-value="none">— Vacía —</button>
+                    <button type="button" class="tc-option" role="option" data-value="recarga">+ Velocidad de recarga</button>
+                    <button type="button" class="tc-option" role="option" data-value="impacto">+ Impacto</button>
+                    <button type="button" class="tc-option" role="option" data-value="durabilidad">+ Durabilidad</button>
+                    <button type="button" class="tc-option" role="option" data-value="dano">+ Daño</button>
+                    <button type="button" class="tc-option" role="option" data-value="estructura">+ Vida de estructura</button>
+                  </div>
+                </div>
+              </div>
+              <div class="tc-perk-slot">
+                <label><span class="slot-num">5</span> Ranura 5</label>
+                <div class="tc-custom-select tc-perk-select tc-enhance" data-slot="5" data-value="none" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+                  <button type="button" class="tc-custom-trigger" aria-label="Seleccionar perk para la ranura 5">
+                    <span class="tc-custom-value">— Vacía —</span><span class="tc-custom-chevron">⌄</span>
+                  </button>
+                  <div class="tc-custom-menu" role="listbox">
+                    <button type="button" class="tc-option" role="option" data-value="none">— Vacía —</button>
+                    <button type="button" class="tc-option" role="option" data-value="recarga">+ Velocidad de recarga</button>
+                    <button type="button" class="tc-option" role="option" data-value="impacto">+ Impacto</button>
+                    <button type="button" class="tc-option" role="option" data-value="durabilidad">+ Durabilidad</button>
+                    <button type="button" class="tc-option" role="option" data-value="dano">+ Daño</button>
+                    <button type="button" class="tc-option" role="option" data-value="estructura">+ Vida de estructura</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tc-actions">
+            <div class="tc-summary" id="tcSummary"></div>
+            <button type="button" id="tcResetBtn" class="tc-reset-btn">↺ Restablecer ranuras</button>
+          </div>
+        </div>
+
+        <!-- Resultados -->
+        <div>
+          <div class="tc-stats">
+            <div class="tc-stat">
+              <div class="tc-stat-label">Durabilidad total</div>
+              <div class="tc-stat-value" id="tcDurability">—</div>
+            </div>
+            <div class="tc-stat">
+              <div class="tc-stat-label">Tiempo de recarga</div>
+              <div class="tc-stat-value" id="tcReload">—<span class="tc-stat-unit">s</span></div>
+            </div>
+            <div class="tc-stat">
+              <div class="tc-stat-label">Daño Base</div>
+              <div class="tc-stat-value" id="tcDamage">—</div>
+            </div>
+          </div>
+          <div class="note" id="tcStructureNote" style="display:none;">
+            <strong>Vida de estructura:</strong>&nbsp;<span id="tcStructureValue">0</span> HP adicionales otorgados a la estructura donde se coloca la trampa.
+          </div>
+          <div class="note">
+            <strong>Nota:</strong>&nbsp;Los valores base y la lista de trampas son ilustrativos y sirven para comparar el efecto relativo de cada combinación de perks, no representan cifras oficiales exactas del juego. La restricción de «un perk por ranura, sin repetirse» sí refleja el sistema real de perks en Fortnite: Salvar el Mundo.
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="accordion">
@@ -1300,6 +1563,184 @@
     });
   });
 
+  // ---- Simulador de Perks de Trampas ----
+  (function(){
+    var trapSelect = document.getElementById('tcTrapSelect');
+    var perkSelects = Array.prototype.slice.call(document.querySelectorAll('.tc-perk-select'));
+    var resetBtn = document.getElementById('tcResetBtn');
+    if(!trapSelect || !perkSelects.length) return;
+
+    // Dropdowns personalizados: no usamos <select>, por lo que Android/iOS nunca abre
+    // el selector nativo blanco del sistema. La lógica del simulador sigue usando valores simples.
+    var dropdowns = [];
+    var openDropdown = null;
+
+    function getValue(el){ return el.getAttribute('data-value') || 'none'; }
+
+    function closeDropdown(el){
+      if(!el) return;
+      el.classList.remove('open');
+      el.setAttribute('aria-expanded','false');
+      if(openDropdown === el) openDropdown = null;
+    }
+
+    function closeAllDropdowns(except){
+      dropdowns.forEach(function(d){ if(d !== except) closeDropdown(d); });
+    }
+
+    function setValue(el, value, emit){
+      el.setAttribute('data-value', value);
+      var option = el.querySelector('.tc-option[data-value="' + value + '"]');
+      var valueEl = el.querySelector('.tc-custom-value');
+      if(option && valueEl) valueEl.textContent = option.textContent.trim();
+      el.querySelectorAll('.tc-option').forEach(function(opt){
+        var selected = opt.getAttribute('data-value') === value;
+        opt.classList.toggle('selected', selected);
+        opt.setAttribute('aria-selected', selected ? 'true' : 'false');
+      });
+      if(emit){
+        el.dispatchEvent(new CustomEvent('tc-change', {detail:{value:value}, bubbles:false}));
+      }
+    }
+
+    function updateDisabledOptions(){
+      var chosen = perkSelects.map(getValue).filter(function(v){ return v !== 'none'; });
+      perkSelects.forEach(function(sel){
+        var current = getValue(sel);
+        sel.querySelectorAll('.tc-option').forEach(function(opt){
+          var v = opt.getAttribute('data-value');
+          var disabled = v !== 'none' && chosen.indexOf(v) !== -1 && v !== current;
+          opt.classList.toggle('disabled', disabled);
+          opt.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+        });
+      });
+    }
+
+    function setupDropdown(el){
+      var trigger = el.querySelector('.tc-custom-trigger');
+      if(!trigger) return;
+      dropdowns.push(el);
+      setValue(el, getValue(el), false);
+
+      trigger.addEventListener('click', function(e){
+        e.stopPropagation();
+        if(el.classList.contains('open')) closeDropdown(el);
+        else {
+          closeAllDropdowns(el);
+          updateDisabledOptions();
+          el.classList.add('open');
+          el.setAttribute('aria-expanded','true');
+          openDropdown = el;
+        }
+      });
+
+      el.querySelectorAll('.tc-option').forEach(function(option){
+        option.addEventListener('click', function(e){
+          e.stopPropagation();
+          if(option.classList.contains('disabled')) return;
+          setValue(el, option.getAttribute('data-value'), true);
+          closeDropdown(el);
+          updateDisabledOptions();
+        });
+      });
+
+      el.addEventListener('keydown', function(e){
+        if(e.key === 'Escape') { closeDropdown(el); trigger.focus(); return; }
+        if((e.key === 'Enter' || e.key === ' ') && document.activeElement === el){
+          e.preventDefault(); trigger.click();
+        }
+      });
+    }
+
+    document.querySelectorAll('.tc-custom-select').forEach(setupDropdown);
+    document.addEventListener('click', function(){ closeAllDropdowns(null); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeAllDropdowns(null); });
+
+    // Valores base ilustrativos por trampa: durabilidad (HP), recarga (s), daño/impacto por uso.
+    var TRAPS = {
+      lanzador:   { label: 'Lanzador de Pared',        durability: 500, reload: 1.5, damage: 15 },
+      alquitran:  { label: 'Trampa de Alquitrán',      durability: 400, reload: 3.0, damage: 5  },
+      electrico:  { label: 'Campo Eléctrico de Techo', durability: 350, reload: 0.5, damage: 50 },
+      dardos:     { label: 'Dardos de Pared',          durability: 300, reload: 0.75, damage: 35 }
+    };
+
+    // Efecto de cada perk. En una trampa Legendaria (Nivel 130) real cada una de las 5 ranuras
+    // aloja un perk DISTINTO: no pueden repetirse dentro de la misma trampa.
+    var PERKS = {
+      recarga:     { tag: 'purple', label: '+ Velocidad de recarga', reloadMult: 0.85 },
+      impacto:     { tag: 'fire',   label: '+ Impacto',              damageMult: 1.25 },
+      durabilidad: { tag: 'water',  label: '+ Durabilidad',          durabilityFlat: 150 },
+      dano:        { tag: 'gold',   label: '+ Daño',                 damageMult: 1.20 },
+      estructura:  { tag: 'nature', label: '+ Vida de estructura',   structureFlat: 200 }
+    };
+
+    var elDurability = document.getElementById('tcDurability');
+    var elReload = document.getElementById('tcReload');
+    var elDamage = document.getElementById('tcDamage');
+    var elSummary = document.getElementById('tcSummary');
+    var elStructureNote = document.getElementById('tcStructureNote');
+    var elStructureValue = document.getElementById('tcStructureValue');
+
+    function enforceUniquePerks(){ updateDisabledOptions(); }
+
+    function calculate(){
+      enforceUniquePerks();
+
+      var trap = TRAPS[getValue(trapSelect)];
+      // Algunas trampas del selector son extensiones del catálogo visual y no tienen
+      // estadísticas base en este simulador; mantienen valores seguros para no romperlo.
+      if(!trap) trap = {durability:500, reload:1.5, damage:15};
+      var durability = trap.durability;
+      var reload = trap.reload;
+      var damage = trap.damage;
+      var structureBonus = 0;
+      var counts = {};
+
+      perkSelects.forEach(function(sel){
+        var v = getValue(sel);
+        if(v === 'none') return;
+        counts[v] = (counts[v] || 0) + 1;
+      });
+
+      if(counts.durabilidad) durability += counts.durabilidad * PERKS.durabilidad.durabilityFlat;
+      if(counts.recarga) reload *= Math.pow(PERKS.recarga.reloadMult, counts.recarga);
+      if(counts.impacto) damage *= Math.pow(PERKS.impacto.damageMult, counts.impacto);
+      if(counts.dano) damage *= Math.pow(PERKS.dano.damageMult, counts.dano);
+      if(counts.estructura) structureBonus += counts.estructura * PERKS.estructura.structureFlat;
+
+      elDurability.innerHTML = Math.round(durability);
+      elReload.innerHTML = reload.toFixed(2) + '<span class="tc-stat-unit">s</span>';
+      elDamage.innerHTML = Math.round(damage);
+
+      if(structureBonus > 0){
+        elStructureValue.textContent = structureBonus;
+        elStructureNote.style.display = 'flex';
+      } else {
+        elStructureNote.style.display = 'none';
+      }
+
+      var tagsHtml = '';
+      Object.keys(counts).forEach(function(key){
+        var perk = PERKS[key];
+        var n = counts[key];
+        tagsHtml += '<span class="tag ' + perk.tag + '">' + perk.label + (n > 1 ? ' ×' + n : '') + '</span>';
+      });
+      elSummary.innerHTML = tagsHtml || '<span style="color:var(--muted-2);font-size:.85rem;">Ninguna ranura configurada todavía.</span>';
+    }
+
+    trapSelect.addEventListener('tc-change', calculate);
+    perkSelects.forEach(function(sel){ sel.addEventListener('tc-change', calculate); });
+
+    if(resetBtn){
+      resetBtn.addEventListener('click', function(){
+        perkSelects.forEach(function(sel){ setValue(sel, 'none', false); });
+        updateDisabledOptions();
+        calculate();
+      });
+    }
+
+    calculate();
+  })();
   // ---- Search filter: filtra tarjetas del acordeón y las abre automáticamente ----
   var searchInput = document.getElementById('searchInput');
   var noResults = document.getElementById('noResults');
