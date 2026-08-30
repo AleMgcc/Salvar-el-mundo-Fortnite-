@@ -308,7 +308,7 @@
   .table-scroll{ overflow-x:auto; }
 
   .note{
-    display:flex; gap:10px; background: rgba(255,140,46,.07); border:1px solid rgba(255,140,46,.28);
+    background: rgba(255,140,46,.07); border:1px solid rgba(255,140,46,.28);
     padding: 12px 14px; border-radius: 10px; font-size:.9rem; color: var(--text); margin: 14px 0;
   }
   .note.warn{ background: rgba(255,84,112,.08); border-color: rgba(255,84,112,.32); }
@@ -431,7 +431,6 @@
   }
   .tc-stat .tc-stat-unit{ font-size:.9rem; color: var(--muted); margin-left:3px; }
 
-
   .tc-actions{
     display:flex; align-items:center; justify-content:space-between; gap:14px;
     flex-wrap:wrap; margin-top: 14px;
@@ -449,7 +448,6 @@
 
   @media (max-width: 480px){
     .tc-perk-grid{ grid-template-columns: 1fr; }
-    .tc-select{ font-size: 1rem; padding: 11px 12px; } /* evita zoom automático en iOS */
     .tc-actions{ flex-direction: column; align-items: stretch; }
     .tc-reset-btn{ width:100%; padding: 11px 16px; }
     .hero-signature{ gap: 20px; }
@@ -517,7 +515,7 @@
       loading="eager"
       reveal="auto">
       <div slot="poster" class="model-poster"><span class="model-poster-dot"></span> Invocando al Rey de la Tormenta…</div>
-      <div slot="error" class="model-error">⚡ El modelo 3D no pudo cargarse. Comprueba que <code>storm_king.glb</code> esté junto a <code>index.html</code> y que el sitio se sirva por http(s) (Netlify o un servidor local), no abierto directamente como archivo.</div>
+      <div slot="error" class="model-error"><span>⚡ El modelo 3D no pudo cargarse. Comprueba que <code>storm_king.glb</code> esté junto a <code>index.html</code> y que el sitio se sirva por http(s) (Netlify o un servidor local), no abierto directamente como archivo.</span></div>
     </model-viewer>
     <span class="eyebrow reveal"><span class="dot"></span> Guía comunitaria no oficial</span>
     <h1 class="reveal d1">La guía definitiva de<br>Salvar el Mundo</h1>
@@ -1085,12 +1083,115 @@
 
       <div class="acc-item reveal">
         <button class="acc-header">
+          <div class="htext"><h3>🗂️ Los 8 Escuadrones de Supervivientes</h3><p class="teaser">Qué escuadrón alimenta cada atributo F.O.R.T. y qué Job de Líder lo maximiza.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Cada uno de los ocho escuadrones que se desbloquean en el Cuartel General está ligado a un atributo F.O.R.T. concreto, y su Líder debe tener el <em>Job</em> correcto para duplicar su Nivel de Poder dentro del escuadrón. Contrastamos esta tabla con la wiki de la comunidad para que los ocho nombres y su atributo coincidan con el sistema actual del juego.</p>
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>Escuadrón</th><th>Atributo F.O.R.T.</th><th>Job de Líder</th><th>Impacto directo</th></tr></thead>
+            <tbody>
+              <tr><td>Escuadrón Médico (EMT Squad)</td><td><span class="tag water">Fortaleza</span></td><td>Doctor</td><td>Salud máxima y velocidad de regeneración de salud.</td></tr>
+              <tr><td>Equipo de Entrenamiento (Training Team)</td><td><span class="tag water">Fortaleza</span></td><td>Entrenador Personal</td><td>Salud máxima y velocidad de regeneración de salud.</td></tr>
+              <tr><td>Equipo Alfa (Fire Team Alpha)</td><td><span class="tag fire">Ofensiva</span></td><td>Tirador</td><td>Daño con armas a distancia.</td></tr>
+              <tr><td>Escuadrón de Asalto Cercano (Close Assault Squad)</td><td><span class="tag fire">Ofensiva</span></td><td>Artista Marcial</td><td>Daño cuerpo a cuerpo.</td></tr>
+              <tr><td>Grupo de Reconocimiento (Scouting Party)</td><td><span class="tag purple">Resistencia</span></td><td>Explorador</td><td>Escudo máximo y su velocidad de recarga.</td></tr>
+              <tr><td>Gadgeteros (Gadgeteers)</td><td><span class="tag purple">Resistencia</span></td><td>Gadgetero</td><td>Escudo máximo y su velocidad de recarga.</td></tr>
+              <tr><td>Cuerpo de Ingeniería (Corps of Engineering)</td><td><span class="tag gold">Tecnología</span></td><td>Ingeniero</td><td>Daño de trampas, habilidades, gadgets y tasa de curación.</td></tr>
+              <tr><td>El Laboratorio de Ideas (The Think Tank)</td><td><span class="tag gold">Tecnología</span></td><td>Inventor</td><td>Daño de trampas, habilidades, gadgets y tasa de curación.</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p style="font-size:.85rem;color:var(--muted);">Los nombres entre paréntesis son los del juego; la traducción es descriptiva y no una localización oficial confirmada.</p>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>➕ Bonificaciones de Conjunto (Set Bonuses)</h3><p class="teaser">Las 7 bonificaciones por coincidencia y la razón matemática de por qué Durabilidad de Trampas les gana a todas.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Cada superviviente <strong>subordinado</strong> (no Líder) trae asignada una Bonificación de Conjunto al azar. Para activarla necesitas reunir, dentro del mismo escuadrón, a varios supervivientes que compartan esa misma bonificación — el número exacto depende de si la bonificación otorga daño o no.</p>
+
+          <div class="note"><strong>Durabilidad de Trampas — +8% con solo 2 coincidencias:</strong> es la única bonificación de conjunto que <em>no</em> se convierte en puntos F.O.R.T.: se aplica como un porcentaje directo sobre la durabilidad de tus trampas, independiente del resto de tus estadísticas. Por eso domina el meta end-game de Escudo Antitormenta, resistencia de 30 oleadas y Aventuras: mientras más grande sea tu cuenta, más diluido se siente cada punto F.O.R.T. adicional, pero este +8% nunca pierde fuerza porque no depende de tu total acumulado.</div>
+
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>Bonificación</th><th>Supervivientes necesarios</th><th>Efecto</th></tr></thead>
+            <tbody>
+              <tr><td>Daño con Armas a Distancia</td><td>3</td><td>+5% daño a distancia (equivale a +5 Ofensiva)</td></tr>
+              <tr><td>Daño con Armas Cuerpo a Cuerpo</td><td>3</td><td>+5% daño cuerpo a cuerpo (equivale a +5 Ofensiva)</td></tr>
+              <tr><td>Daño de Trampas</td><td>3</td><td>+5% daño de trampas (equivale a +5 Tecnología)</td></tr>
+              <tr><td>Salud Máxima</td><td>2</td><td>+5% salud (equivale a +5 Fortaleza)</td></tr>
+              <tr><td>Escudo Máximo</td><td>2</td><td>+5% escudo (equivale a +5 Resistencia)</td></tr>
+              <tr><td>Velocidad de Recuperación de Escudo</td><td>2</td><td>+5% velocidad de recarga de escudo (equivale a +5 Resistencia)</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p style="font-size:.85rem;color:var(--muted);">Nota: toda bonificación que involucra daño pide 3 coincidencias; las que no otorgan daño (salud, escudo, su recarga, y la propia Durabilidad de Trampas) piden solo 2.</p>
+
+          <h4>Por qué la comunidad prioriza Durabilidad de Trampas casi de forma absoluta</h4>
+          <p>Las otras 6 bonificaciones son <strong>aditivas</strong>: un +5% se traduce literalmente en +5 puntos planos sobre tu atributo F.O.R.T. correspondiente, no en un +5% final sobre tu daño total ya calculado. Como cada punto F.O.R.T. vale por sí mismo +1% de esa estadística, sumar 5 puntos a una Ofensiva que ya está en varios cientos por ciento (por evolución de héroes, ventajas y esquemas) apenas mueve la aguja en términos relativos. La Durabilidad de Trampas, en cambio, nunca se «diluye» de esa forma porque no pasa por el sistema F.O.R.T.: siempre es un +8% neto sobre lo que ya tenías.</p>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
           <div class="htext"><h3>👑 Líderes Míticos y compatibilidad de personalidad</h3><p class="teaser">Por qué la Durabilidad de Trampas es la bonificación más valorada.</p></div>
           <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
         </button>
         <div class="acc-panel"><div class="acc-panel-inner">
           <p>Cada superviviente tiene una <strong>personalidad</strong> (ej. Comprometido/a, Analítico/a, Corredor de riesgos) que puede coincidir o entrar en conflicto con la del líder mítico de su escuadrón. Emparejar personalidades compatibles otorga una bonificación adicional de F.O.R.T. respecto a colocar un superviviente de personalidad no afín.</p>
           <div class="note"><strong>Por qué la Durabilidad de Trampas es la bonificación más valorada:</strong> a diferencia de bonos de daño puntuales, la durabilidad de trampas se multiplica por cada trampa del túnel y por cada oleada jugada, así que su impacto acumulado en sesiones largas (Escudo Antitormenta, Aventuras) supera a bonos de daño que solo aplican a un arma o clase específica.</div>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>🎖️ Supervivientes Míticos de Escuadrón: Joel y Karolina</h3><p class="teaser">Los dos únicos supervivientes Míticos que ocupan una ranura subordinada, no de Líder.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>Hay bastantes Líderes Míticos en el juego, pero solo existen dos supervivientes de rareza <strong>Mítica que ocupan una ranura subordinada normal</strong> (no la ranura de Líder): <strong>Joel</strong> y <strong>Karolina</strong>. Ambos se consiguen gratis mediante misiones secundarias de la base, disponibles después de completar la Defensa de Escudo Antitormenta 5 de Villatabla:</p>
+          <ul>
+            <li><strong>Joel</strong> — se obtiene completando la misión <strong>«Joel's Pub»</strong>, que consiste en encontrar el bar de Joel dentro de una misión en zona de nivel 40+. Su personalidad es <strong>Soñador (Dreamer)</strong>.</li>
+            <li><strong>Karolina</strong> — se obtiene completando <strong>«Portraits of Someone Special»</strong>, reuniendo 10 Retratos de Karolina (se encuentran destruyendo pianos) en una zona de nivel 40+.</li>
+          </ul>
+          <div class="note">Ambos supervivientes son un homenaje in-game a dos desarrolladores reales de Epic Games que programaron el Salvar el Mundo original: Joel Crabbe y Karolina Grochowska, quienes aparecen acreditados juntos al inicio de los créditos del juego. Karolina falleció en 2014.</div>
+          <p>Al ser Míticos, su aporte F.O.R.T. individual es mayor que el de un superviviente Legendario del mismo nivel, así que encajarlos en el escuadrón correcto (según su Job y personalidad) ayuda a acercarte a los topes de Nivel de Poder 130, 139 y al límite absoluto de cuenta de <strong>145</strong>.</p>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>📈 Guía de Prioridad para Subir de Nivel</h3><p class="teaser">En qué orden invertir Experiencia de Superviviente, Manuales de Entrenamiento y materiales raros.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <ol>
+            <li><strong>Líderes Míticos primero.</strong> Dan el mayor salto directo de Nivel de Poder por cada nivel invertido, y multiplican el valor de todo superviviente subordinado que coincida con su personalidad.</li>
+            <li><strong>Supervivientes que coinciden en personalidad con su Líder Mítico.</strong> La coincidencia otorga puntos F.O.R.T. adicionales que escalan según la rareza del Líder.</li>
+            <li><strong>Prioriza Ofensiva y Tecnología antes que Fortaleza y Resistencia.</strong> Muchos jugadores nivelan primero los escuadrones que aumentan el daño de armas y de trampas/habilidades, porque acelera la eliminación de cáscaras; Fortaleza y Resistencia importan, pero se sienten menos en el ritmo de combate diario.</li>
+            <li><strong>Cuidado con el desajuste de personalidad.</strong> Colocar un superviviente cuya personalidad no coincide con la del Líder Mítico reduce los puntos F.O.R.T. que ese superviviente aporta frente a si sí coincidiera. Aun así, la comunidad coincide en algo verificable: <strong>un superviviente Legendario que no coincide en personalidad sigue superando a un Épico que sí coincide</strong> — la rareza pesa más que el ajuste de personalidad cuando la diferencia de rareza es grande.</li>
+          </ol>
+          <div class="note">Recursos raros como Gotas Puras de Lluvia, Botellas de Rayos, Ojo de la Tormenta y Sombra de la Tormenta se usan para evolucionar rareza (no solo nivel); consérvalos para los Líderes Míticos y los subordinados que ya tengan personalidad afín, en vez de gastarlos en supervivientes que pienses reemplazar pronto.</div>
+        </div></div>
+      </div>
+
+      <div class="acc-item reveal">
+        <button class="acc-header">
+          <div class="htext"><h3>⚡ Súper Cargadores de Superviviente</h3><p class="teaser">Cómo superar el Nivel 50 (PL 130) y llegar al tope de cuenta: Nivel de Poder 145.</p></div>
+          <span class="acc-toggle"><span class="tlabel"></span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <p>El Nivel de Poder 130 es, técnicamente, el tope «normal» de cualquier Líder Mítico o superviviente en Nivel 50. Superarlo requiere un recurso de cuenta aparte: los <strong>Súper Cargadores de Superviviente</strong> (Survivor Superchargers).</p>
+          <ul>
+            <li>Cada Súper Cargador aplicado sube el nivel del superviviente en <strong>2</strong>, permitiendo avanzar del Nivel 50 hasta el Nivel 60 (en los peldaños 52, 54, 56, 58 y 60).</li>
+            <li>Se obtienen de dos formas: completando <strong>misiones semanales en zonas de Nivel de Poder 160</strong> (requieren antes haber completado la campaña de Valle Cannoso hasta su Defensa de Escudo Antitormenta 5), y de forma más constante como recompensa de las temporadas de <strong>Aventuras (Ventures)</strong>.</li>
+            <li>Llevar tus Líderes Míticos y supervivientes clave del Nivel 50 al Nivel 60 es lo que finalmente permite alcanzar el <strong>Nivel de Poder máximo de cuenta: 145</strong>.</li>
+          </ul>
         </div></div>
       </div>
     </div>
@@ -1658,10 +1759,20 @@
 
     // Valores base ilustrativos por trampa: durabilidad (HP), recarga (s), daño/impacto por uso.
     var TRAPS = {
-      lanzador:   { label: 'Lanzador de Pared',        durability: 500, reload: 1.5, damage: 15 },
-      alquitran:  { label: 'Trampa de Alquitrán',      durability: 400, reload: 3.0, damage: 5  },
-      electrico:  { label: 'Campo Eléctrico de Techo', durability: 350, reload: 0.5, damage: 50 },
-      dardos:     { label: 'Dardos de Pared',          durability: 300, reload: 0.75, damage: 35 }
+      // Pared
+      lanzador:     { label: 'Lanzador de Pared',           durability: 500, reload: 1.5,  damage: 15 },
+      dardos:       { label: 'Dardos de Pared',             durability: 300, reload: 0.75, damage: 35 },
+      dinamo_pared: { label: 'Dínamo de Pared (Eléctrica)', durability: 350, reload: 1.0,  damage: 40 },
+      // Techo
+      electrico:    { label: 'Campo Eléctrico de Techo',    durability: 350, reload: 0.5,  damage: 50 },
+      zapper_techo: { label: 'Zapper de Techo',             durability: 300, reload: 0.6,  damage: 45 },
+      // Suelo / Piso
+      alquitran:    { label: 'Trampa de Alquitrán',         durability: 400, reload: 3.0,  damage: 5  },
+      puas_suelo:   { label: 'Trampa de Púas de Suelo',     durability: 450, reload: 1.2,  damage: 30 },
+      fuego_suelo:  { label: 'Parrilla de Fuego de Piso',   durability: 400, reload: 1.5,  damage: 60 },
+      gas:          { label: 'Trampa de Gas',               durability: 250, reload: 2.0,  damage: 20 },
+      congelacion:  { label: 'Trampa de Congelación',       durability: 300, reload: 2.5,  damage: 10 },
+      dano_suelo:   { label: 'Trampa de Daño',              durability: 350, reload: 1.0,  damage: 25 }
     };
 
     // Efecto de cada perk. En una trampa Legendaria (Nivel 130) real cada una de las 5 ranuras
@@ -1714,7 +1825,7 @@
 
       if(structureBonus > 0){
         elStructureValue.textContent = structureBonus;
-        elStructureNote.style.display = 'flex';
+        elStructureNote.style.display = 'block';
       } else {
         elStructureNote.style.display = 'none';
       }
@@ -1741,6 +1852,7 @@
 
     calculate();
   })();
+
   // ---- Search filter: filtra tarjetas del acordeón y las abre automáticamente ----
   var searchInput = document.getElementById('searchInput');
   var noResults = document.getElementById('noResults');
