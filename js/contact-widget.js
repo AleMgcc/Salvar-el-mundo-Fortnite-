@@ -12,8 +12,23 @@ import { contactToggle, contactPanel, contactCopyBtn, contactToast } from './dom
   // así que su posición se calcula en JS a partir del botón cada vez que se abre.
   function positionContactPanel(){
     var rect = contactToggle.getBoundingClientRect();
+    var margin = 12; // separación mínima respecto al borde de la pantalla
+    var panelWidth = contactPanel.offsetWidth;
+    var viewportWidth = document.documentElement.clientWidth;
+
+    // Centro horizontal ideal: el centro del botón.
+    var idealLeft = rect.left + rect.width / 2;
+
+    // El panel se centra con translateX(-50%), así que su borde real queda
+    // en (left - panelWidth/2) y (left + panelWidth/2). Estos límites evitan
+    // que se corte contra los bordes de la pantalla en celulares, cuando el
+    // botón está cerca del borde izquierdo o derecho del viewport.
+    var minLeft = margin + panelWidth / 2;
+    var maxLeft = viewportWidth - margin - panelWidth / 2;
+    var left = Math.min(Math.max(idealLeft, minLeft), maxLeft);
+
     contactPanel.style.top = (rect.bottom + 10) + 'px';
-    contactPanel.style.left = (rect.left + rect.width / 2) + 'px';
+    contactPanel.style.left = left + 'px';
   }
 
   function closeContactPanel(){
@@ -81,3 +96,4 @@ import { contactToggle, contactPanel, contactCopyBtn, contactToast } from './dom
     document.body.removeChild(tmp);
   }
 })();
+    
