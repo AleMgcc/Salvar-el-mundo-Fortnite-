@@ -3,765 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ojo de la Tormenta — Guía Definitiva de Fortnite: Salvar el Mundo</title>
+<title>Enciclopedia — Guía Definitiva de Fortnite: Salvar el Mundo</title>
 <meta name="description" content="Guía enciclopédica en español sobre Fortnite: Salvar el Mundo — héroes, trampas, IA de enemigos, recursos, supervivientes, lore y end-game.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <!-- Carga de Model Viewer (modelo 3D del Rey de la Tormenta) -->
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-<style>
-  :root{
-    --bg-deep:      #04060f;
-    --bg-navy:      #0a0f24;
-    --bg-navy-2:    #0d1330;
-    --surface:      rgba(16,20,46,0.72);
-    --surface-solid:#111531;
-    --border:       rgba(122,92,255,0.22);
-    --border-soft:  rgba(122,92,255,0.12);
-    --text:         #eae8fb;
-    --muted:        #a49dd6;
-    --muted-2:      #6d68a3;
-
-    --storm-purple: #7c3aed;
-    --storm-purple-2:#9d5cff;
-    --storm-deep:   #2e1065;
-    --energy-orange:#ff8c2e;
-    --energy-yellow:#ffcf40;
-    --gold:         #f6c945;
-    --gold-2:       #fff2b8;
-    --danger:       #ff5470;
-
-    --fire: #ff7a45;
-    --nature: #3ddc84;
-    --water: #38bdf8;
-    --energy: #f5c542;
-
-    --radius: 16px;
-    --font-display: 'Rajdhani', sans-serif;
-    --font-body: 'Inter', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-  }
-
-  *{ box-sizing: border-box; }
-  html{ scroll-behavior: smooth; }
-
-  body{
-    margin:0;
-    background: var(--bg-deep);
-    color: var(--text);
-    font-family: var(--font-body);
-    line-height: 1.65;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-  }
-
-  /* ---------- FONDO AMBIENTAL: TORMENTA + PARTÍCULAS ---------- */
-  body::before{
-    content:"";
-    position: fixed; inset:0; z-index:-3;
-    background:
-      radial-gradient(70vw 50vh at 10% -5%, rgba(124,58,237,0.28), transparent 60%),
-      radial-gradient(60vw 45vh at 100% 0%, rgba(255,140,46,0.14), transparent 55%),
-      radial-gradient(80vw 60vh at 50% 120%, rgba(46,16,101,0.5), transparent 60%),
-      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-navy) 45%, var(--bg-navy-2) 100%);
-  }
-  #fogCanvas{
-    position: fixed; inset:0; z-index:-2; width:100%; height:100%;
-    opacity:.55; pointer-events:none;
-  }
-  .noise-overlay{
-    position: fixed; inset:0; z-index:-1; pointer-events:none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-    mix-blend-mode: overlay;
-  }
-
-  a{ color: var(--energy-yellow); }
-  h1,h2,h3,h4{ font-family: var(--font-display); font-weight: 700; letter-spacing: 0.01em; margin: 0 0 .5em; color: #fff; }
-  p{ margin: 0 0 1em; color: var(--text); }
-  code, .mono{ font-family: var(--font-mono); }
-
-  a:focus-visible, button:focus-visible, input:focus-visible{
-    outline: 2px solid var(--gold);
-    outline-offset: 2px;
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
-  }
-
-  /* ---------- SCROLL REVEAL ---------- */
-  .reveal{ opacity:0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
-  .reveal.in-view{ opacity:1; transform: translateY(0); }
-  .reveal.d1{ transition-delay: .05s; }
-  .reveal.d2{ transition-delay: .12s; }
-  .reveal.d3{ transition-delay: .19s; }
-
-  /* ---------- NAV ---------- */
-  header.topbar{
-    position: sticky; top:0; z-index: 50;
-    background: rgba(4,6,15,0.82);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-soft);
-  }
-  .topbar-inner{
-    max-width: 1280px; margin:0 auto; padding: 12px 20px;
-    display:flex; align-items:center; gap:18px; flex-wrap: wrap;
-  }
-  .brand{
-    display:flex; align-items:center; gap:10px;
-    font-family: var(--font-display); font-weight:700; font-size:1.25rem; color:#fff;
-    white-space: nowrap;
-  }
-  .brand .eye{
-    width: 24px; height:24px; border-radius:50%; position:relative;
-    background: conic-gradient(from 0deg, var(--storm-purple), var(--energy-orange), var(--gold), var(--storm-purple));
-    animation: spin 6s linear infinite;
-    box-shadow: 0 0 16px rgba(255,140,46,.6), 0 0 26px rgba(124,58,237,.5);
-  }
-  @keyframes spin{ to{ transform: rotate(360deg);} }
-
-  nav.tabs{ display:flex; gap:4px; overflow-x:auto; flex:1; scrollbar-width: thin; }
-  nav.tabs::-webkit-scrollbar{ height:6px; }
-  nav.tabs::-webkit-scrollbar-thumb{ background: var(--border); border-radius:4px; }
-
-  .tab-btn{
-    background:transparent; border:1px solid transparent; color: var(--muted);
-    font-family: var(--font-display); font-weight:600; font-size:.86rem;
-    padding: 8px 12px; border-radius: 10px; cursor:pointer; white-space:nowrap;
-    transition: color .15s ease, background .15s ease, border-color .15s ease, box-shadow .2s ease;
-  }
-  .tab-btn:hover{ color: #fff; background: rgba(124,58,237,.14); }
-  .tab-btn.active{
-    color:#0a0a16; background: linear-gradient(135deg, var(--gold), var(--energy-orange));
-    border-color: transparent; box-shadow: 0 0 18px rgba(255,140,46,.45);
-  }
-
-  .search-wrap{ position: relative; min-width: 200px; }
-  .search-wrap input{
-    width:100%; background: var(--surface-solid); border:1px solid var(--border);
-    color: var(--text); padding: 9px 12px 9px 32px; border-radius: 10px; font-size:.86rem;
-    font-family: var(--font-body);
-  }
-  .search-wrap input::placeholder{ color: var(--muted-2); }
-  .search-wrap svg{ position:absolute; left:9px; top:50%; transform:translateY(-50%); opacity:.6; }
-
-  /* ---------- HERO ---------- */
-  .hero{
-    position: relative; overflow:hidden;
-    padding: 110px 20px 90px;
-    text-align:center;
-    border-bottom: 1px solid var(--border-soft);
-    isolation: isolate;
-  }
-  .hero-bg{
-    position:absolute; inset:0; z-index:-2;
-    background-image:
-      linear-gradient(180deg, rgba(4,6,15,.55) 0%, rgba(6,8,22,.78) 55%, var(--bg-deep) 100%),
-      url('https://images.unsplash.com/photo-1605727216801-e27ce1d0cc28?auto=format&fit=crop&w=1800&q=80');
-    background-size: cover; background-position: center 35%;
-    animation: heroPan 26s ease-in-out infinite alternate;
-  }
-  @keyframes heroPan{ from{ background-position: center 30%; } to{ background-position: center 42%; } }
-  .lightning-flash{
-    position:absolute; inset:0; z-index:-1; background: rgba(157,92,255,0.18);
-    opacity:0; pointer-events:none; animation: flash 9s ease-in-out infinite;
-  }
-  @keyframes flash{
-    0%,92%,100%{ opacity:0; } 93%{ opacity:.7; } 94%{ opacity:.05; } 95%{ opacity:.5; } 96%{ opacity:0; }
-  }
-  .hero-inner{ position:relative; z-index:1; max-width: 800px; margin:0 auto; }
-
-  model-viewer{
-    width: 100%;
-    max-width: 460px;
-    height: 300px;
-    margin: 0 auto 6px auto;
-    background-color: transparent;
-    --poster-color: transparent;
-    filter: drop-shadow(0 18px 34px rgba(124,58,237,.45));
-  }
-  @media (max-width: 600px){
-    model-viewer{ height: 240px; }
-  }
-  .model-poster, .model-error{
-    display:flex; align-items:center; justify-content:center; gap:8px; text-align:center;
-    width:100%; height:100%; color: var(--muted); font-family: var(--font-mono); font-size:.8rem;
-    padding: 0 18px;
-  }
-  .model-poster-dot{
-    width:8px; height:8px; border-radius:50%; background: var(--energy-orange);
-    box-shadow: 0 0 10px var(--energy-orange); animation: pulse 1.2s infinite;
-  }
-  .model-error{ color: var(--muted); line-height:1.5; }
-  .model-error code{ color: var(--gold); }
-  .eyebrow{
-    display:inline-flex; align-items:center; gap:8px;
-    font-family: var(--font-mono); font-size:.75rem; letter-spacing:.14em; text-transform:uppercase;
-    color: var(--gold); border:1px solid rgba(246,201,69,.4); padding:5px 12px; border-radius:999px;
-    background: rgba(246,201,69,.08); margin-bottom: 22px;
-  }
-  .eyebrow .dot{ width:6px; height:6px; border-radius:50%; background: var(--energy-orange); box-shadow:0 0 10px var(--energy-orange); animation: pulse 1.8s infinite; }
-  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
-
-  .hero h1{
-    font-size: clamp(2.2rem, 5vw, 3.8rem); line-height:1.05; margin-bottom: 18px;
-    background: linear-gradient(120deg, #fff 20%, var(--gold) 55%, var(--storm-purple-2) 85%);
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-    text-shadow: 0 0 60px rgba(157,92,255,.25);
-  }
-  .hero p.lead{ color: var(--muted); font-size:1.1rem; max-width: 640px; margin: 0 auto 30px; }
-  .hero-stats{ display:flex; justify-content:center; gap:30px; flex-wrap:wrap; margin-top: 12px; }
-  .hero-stats div{ text-align:left; }
-  .hero-stats .num{ font-family: var(--font-display); font-size:1.7rem; color:var(--gold); font-weight:700; text-shadow: 0 0 16px rgba(246,201,69,.5); }
-  .hero-stats .label{ font-size:.75rem; color: var(--muted-2); text-transform:uppercase; letter-spacing:.08em; }
-  .hero-signature .num.contact{ font-size:1.25rem; letter-spacing:.02em; }
-
-  /* ---------- LAYOUT ---------- */
-  main{ max-width: 1080px; margin: 0 auto; padding: 50px 20px 110px; position:relative; z-index:1; }
-  section.panel{ display:none; }
-  section.panel.active{ display:block; }
-
-  .section-head{
-    position:relative; margin-bottom: 34px; padding: 26px 24px; border-radius: var(--radius);
-    overflow:hidden; border:1px solid var(--border-soft);
-    background-size: cover; background-position:center;
-    isolation:isolate;
-  }
-  .section-head::before{
-    content:""; position:absolute; inset:0; z-index:-1;
-    background: linear-gradient(120deg, rgba(6,8,22,.92) 30%, rgba(46,16,101,.7));
-  }
-  .section-head .idx{ font-family: var(--font-mono); color: var(--gold); font-size:.78rem; letter-spacing:.08em; }
-  .section-head h2{ font-size: 2rem; margin: 6px 0 8px; }
-  .section-head p{ color: var(--muted); max-width: 720px; margin:0; }
-
-  /* ---------- ACORDEÓN ---------- */
-  .accordion{ display:flex; flex-direction:column; gap:14px; }
-  .acc-item{
-    position: relative;
-    background: var(--surface); border:1px solid var(--border-soft);
-    border-radius: var(--radius); overflow:hidden;
-    backdrop-filter: blur(6px);
-    transition: border-color .25s ease, box-shadow .25s ease;
-  }
-  .acc-item::after{
-    content:""; position:absolute; inset:-1px; border-radius: var(--radius); z-index:-1;
-    background: linear-gradient(120deg, rgba(124,58,237,.5), rgba(255,140,46,.35));
-    opacity:0; transition: opacity .3s ease;
-  }
-  .acc-item:hover{ border-color: rgba(255,140,46,.4); }
-  .acc-item:hover::after{ opacity:.5; }
-  .acc-item.open{ box-shadow: 0 0 0 1px rgba(255,140,46,.3), 0 0 28px rgba(124,58,237,.28); }
-
-  .acc-header{
-    width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px;
-    background:transparent; border:none; text-align:left; cursor:pointer;
-    padding: 20px 22px; color:#fff;
-  }
-  .acc-header .htext h3{
-    font-size: 1.15rem; margin:0 0 4px; display:flex; align-items:center; gap:8px;
-    color: var(--gold-2);
-  }
-  .acc-header .htext .teaser{ color: var(--muted); font-size:.88rem; margin:0; }
-  .acc-toggle{
-    flex-shrink:0; display:flex; align-items:center; gap:8px;
-    font-family: var(--font-display); font-weight:700; font-size:.78rem; letter-spacing:.04em; text-transform:uppercase;
-    color: var(--bg-deep); background: linear-gradient(135deg, var(--gold), var(--energy-orange));
-    padding: 8px 14px; border-radius: 999px; white-space:nowrap;
-    box-shadow: 0 0 0 rgba(255,140,46,0); transition: box-shadow .3s ease, transform .2s ease;
-  }
-  .acc-item:hover .acc-toggle{ box-shadow: 0 0 18px rgba(255,140,46,.55); }
-  .acc-toggle svg{ transition: transform .3s ease; }
-  .acc-item.open .acc-toggle svg{ transform: rotate(180deg); }
-  .acc-item.open .acc-toggle .tlabel::after{ content: " —  Ocultar"; }
-  .acc-toggle .tlabel::after{ content: " —  Desplegar"; }
-
-  .acc-panel{
-    max-height:0; overflow:hidden; transition: max-height .5s cubic-bezier(.4,0,.2,1);
-  }
-  .acc-panel-inner{ padding: 0 22px 24px; border-top: 1px solid var(--border-soft); margin-top: -2px; padding-top: 18px; }
-
-  .acc-panel-inner ul, .acc-panel-inner ol{ padding-left: 1.15em; color: var(--text); }
-  .acc-panel-inner li{ margin-bottom: 6px; }
-  .acc-item.hidden-by-search{ display:none; }
-
-  .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
-  .grid-3{ display:grid; grid-template-columns: repeat(3,1fr); gap:16px; }
-  @media (max-width: 760px){ .grid-2, .grid-3{ grid-template-columns: 1fr; } }
-
-  .tag{
-    display:inline-block; font-family: var(--font-mono); font-size:.7rem; letter-spacing:.05em;
-    padding: 2px 9px; border-radius: 999px; border:1px solid var(--border); color: var(--muted); margin: 2px 4px 2px 0;
-  }
-  .tag.purple{ color: var(--storm-purple-2); border-color: rgba(124,58,237,.45); background: rgba(124,58,237,.1); }
-  .tag.gold{ color: var(--gold); border-color: rgba(246,201,69,.45); background: rgba(246,201,69,.1); }
-  .tag.fire{ color: var(--fire); border-color: rgba(255,122,69,.4); background: rgba(255,122,69,.08); }
-  .tag.nature{ color: var(--nature); border-color: rgba(61,220,132,.4); background: rgba(61,220,132,.08); }
-  .tag.water{ color: var(--water); border-color: rgba(56,189,248,.4); background: rgba(56,189,248,.08); }
-  .tag.energy{ color: var(--energy); border-color: rgba(245,197,66,.4); background: rgba(245,197,66,.08); }
-
-  table{ width:100%; border-collapse: collapse; margin: 14px 0; font-size:.92rem; }
-  th, td{ text-align:left; padding: 9px 12px; border-bottom: 1px solid var(--border-soft); }
-  th{ color: var(--gold); font-family: var(--font-mono); font-weight:600; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; }
-  tr:hover td{ background: rgba(124,58,237,.08); }
-  .table-scroll{ overflow-x:auto; }
-
-  .note{
-    background: rgba(255,140,46,.07); border:1px solid rgba(255,140,46,.28);
-    padding: 12px 14px; border-radius: 10px; font-size:.9rem; color: var(--text); margin: 14px 0;
-  }
-  .note.warn{ background: rgba(255,84,112,.08); border-color: rgba(255,84,112,.32); }
-  .note strong{ color: #fff; }
-
-  .thumb{
-    width:100%; height:150px; object-fit:cover; border-radius: 12px; margin-bottom:14px;
-    border:1px solid var(--border-soft);
-    filter: saturate(1.1) contrast(1.05);
-  }
-
-  /* ---------- ELEMENT CALCULATOR ---------- */
-  .calc{ display:grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items:start; }
-  @media (max-width:760px){ .calc{ grid-template-columns:1fr; } }
-  .elem-btns{ display:flex; flex-wrap:wrap; gap:10px; }
-  .elem-btn{
-    flex:1 1 40%; cursor:pointer; border-radius: 12px; border:1px solid var(--border);
-    background: var(--surface-solid); color:#fff; font-family: var(--font-display); font-weight:600;
-    padding: 14px 10px; text-align:center; font-size:.95rem; transition: transform .12s ease, border-color .12s ease, box-shadow .2s ease;
-  }
-  .elem-btn:hover{ transform: translateY(-2px); }
-  .elem-btn[data-el="fuego"]{ border-color: rgba(255,122,69,.5); }
-  .elem-btn[data-el="naturaleza"]{ border-color: rgba(61,220,132,.5); }
-  .elem-btn[data-el="agua"]{ border-color: rgba(56,189,248,.5); }
-  .elem-btn[data-el="energia"]{ border-color: rgba(245,197,66,.5); }
-  .elem-btn.selected[data-el="fuego"]{ background: rgba(255,122,69,.18); box-shadow: 0 0 18px rgba(255,122,69,.35); }
-  .elem-btn.selected[data-el="naturaleza"]{ background: rgba(61,220,132,.18); box-shadow: 0 0 18px rgba(61,220,132,.35); }
-  .elem-btn.selected[data-el="agua"]{ background: rgba(56,189,248,.18); box-shadow: 0 0 18px rgba(56,189,248,.35); }
-  .elem-btn.selected[data-el="energia"]{ background: rgba(245,197,66,.18); box-shadow: 0 0 18px rgba(245,197,66,.35); }
-
-  .calc-result{
-    background: var(--surface); border:1px solid var(--border-soft); border-radius: var(--radius);
-    padding: 20px; min-height: 170px; display:flex; flex-direction:column; justify-content:center;
-  }
-  .calc-result .rec-elem{ font-family: var(--font-display); font-size:1.4rem; margin-bottom:6px; color: var(--gold); }
-  .calc-result .weak{ color: var(--muted-2); font-size:.85rem; }
-
-  /* ---------- SIMULADOR DE PERKS DE TRAMPAS ---------- */
-  .tc-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 26px; align-items:start; }
-  @media (max-width: 760px){ .tc-grid{ grid-template-columns: 1fr; } }
-
-  .tc-field{ margin-bottom: 16px; }
-  .tc-field label{
-    display:block; font-family: var(--font-mono); font-size:.7rem; text-transform:uppercase;
-    letter-spacing:.06em; color: var(--muted-2); margin-bottom: 6px;
-  }
-  .tc-custom-select{ position:relative; width:100%; font-family:var(--font-body); }
-  .tc-custom-trigger{
-    width:100%; min-height:44px; display:flex; align-items:center; justify-content:space-between; gap:12px;
-    background:linear-gradient(180deg, rgba(20,24,43,.98), rgba(13,15,29,.98));
-    border:1px solid rgba(124,58,237,.38); color:var(--text); padding:10px 12px; border-radius:10px;
-    font:inherit; font-size:.9rem; text-align:left; cursor:pointer; transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .tc-custom-trigger:hover,.tc-custom-select.open .tc-custom-trigger,.tc-custom-select:focus-within .tc-custom-trigger{
-    border-color:rgba(56,189,248,.7); box-shadow:0 0 0 3px rgba(56,189,248,.08), 0 0 18px rgba(124,58,237,.16);
-    background:linear-gradient(180deg, rgba(25,30,54,.99), rgba(15,18,35,.99));
-  }
-  .tc-custom-chevron{ color:var(--gold); font-size:1.15rem; line-height:1; transition:transform .2s ease; }
-  .tc-custom-select.open .tc-custom-chevron{ transform:rotate(180deg); }
-  .tc-custom-menu{
-    position:absolute; z-index:1000; left:0; right:0; top:calc(100% + 7px); display:none;
-    max-height:min(360px, 55vh); overflow-y:auto; padding:7px;
-    background:#0d0f1d; border:1px solid rgba(124,58,237,.5); border-radius:12px;
-    box-shadow:0 18px 45px rgba(0,0,0,.55), 0 0 24px rgba(56,189,248,.08);
-    overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
-  }
-  .tc-custom-select.open .tc-custom-menu{ display:block; animation:tcMenuIn .16s ease-out; }
-  @keyframes tcMenuIn{ from{opacity:0; transform:translateY(-4px)} to{opacity:1; transform:translateY(0)} }
-  .tc-option-group-label{
-    padding:7px 9px 5px; color:var(--gold); font-family:var(--font-mono); font-size:.64rem;
-    text-transform:uppercase; letter-spacing:.08em; opacity:.9;
-  }
-  .tc-option{
-    display:block; width:100%; border:0; border-radius:8px; padding:10px 10px; margin:2px 0;
-    background:transparent; color:#f5f7ff; font:inherit; font-size:.88rem; text-align:left; cursor:pointer;
-    transition:background .15s ease, color .15s ease, transform .12s ease;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .tc-option:hover,.tc-option:focus{ background:rgba(124,58,237,.22); color:#fff; outline:none; }
-  .tc-option:active{ background:rgba(56,189,248,.18); transform:scale(.99); }
-  .tc-option.selected{ background:linear-gradient(90deg, rgba(124,58,237,.3), rgba(56,189,248,.12)); color:var(--gold); box-shadow:inset 2px 0 0 var(--gold); }
-  .tc-option.disabled{ color:rgba(148,163,184,.42); cursor:not-allowed; background:transparent; text-decoration:line-through; }
-  .tc-option.disabled:hover,.tc-option.disabled:focus{ background:transparent; color:rgba(148,163,184,.42); }
-  .tc-custom-menu::-webkit-scrollbar{ width:7px; }
-  .tc-custom-menu::-webkit-scrollbar-track{ background:#0a0c17; border-radius:10px; }
-  .tc-custom-menu::-webkit-scrollbar-thumb{ background:rgba(124,58,237,.55); border-radius:10px; }
-  @media (max-width:480px){
-    .tc-custom-trigger{ font-size:1rem; min-height:46px; padding:11px 12px; }
-    .tc-custom-menu{ max-height:52vh; border-radius:11px; padding:6px; }
-    .tc-option{ font-size:.96rem; padding:12px 10px; min-height:44px; }
-  }
-
-  .tc-perk-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:12px; }
-  .tc-perk-slot label{
-    display:flex; align-items:center; gap:6px;
-  }
-  .tc-perk-slot label .slot-num{
-    display:inline-flex; align-items:center; justify-content:center;
-    width:16px; height:16px; border-radius:50%; background: var(--storm-purple); color:#fff;
-    font-size:.62rem; font-family: var(--font-mono);
-  }
-
-  .tc-summary{ display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; min-height: 26px; }
-
-  .tc-stats{ display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-bottom: 6px; }
-  @media (max-width: 600px){ .tc-stats{ grid-template-columns: 1fr; } }
-  .tc-stat{
-    background: var(--surface-solid); border:1px solid var(--border-soft); border-radius: 12px;
-    padding: 16px; text-align:center; transition: box-shadow .25s ease, border-color .25s ease;
-  }
-  .tc-stat:hover{ border-color: rgba(255,140,46,.35); box-shadow: 0 0 18px rgba(124,58,237,.25); }
-  .tc-stat .tc-stat-label{
-    font-family: var(--font-mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.06em;
-    color: var(--muted-2); margin-bottom: 6px;
-  }
-  .tc-stat .tc-stat-value{
-    font-family: var(--font-display); font-size:1.55rem; font-weight:700; color: var(--gold);
-    text-shadow: 0 0 14px rgba(246,201,69,.35);
-  }
-  .tc-stat .tc-stat-unit{ font-size:.9rem; color: var(--muted); margin-left:3px; }
-
-  .tc-actions{
-    display:flex; align-items:center; justify-content:space-between; gap:14px;
-    flex-wrap:wrap; margin-top: 14px;
-  }
-  .tc-summary{ margin-top:0; flex:1; }
-  .tc-reset-btn{
-    flex-shrink:0; cursor:pointer; border:none; white-space:nowrap;
-    font-family: var(--font-display); font-weight:700; font-size:.78rem; letter-spacing:.03em; text-transform:uppercase;
-    color: var(--bg-deep); background: linear-gradient(135deg, var(--gold), var(--energy-orange));
-    padding: 9px 16px; border-radius: 999px;
-    box-shadow: 0 0 0 rgba(255,140,46,0); transition: box-shadow .3s ease, transform .15s ease;
-  }
-  .tc-reset-btn:hover{ box-shadow: 0 0 18px rgba(255,140,46,.55); transform: translateY(-1px); }
-  .tc-reset-btn:active{ transform: translateY(0); }
-
-  @media (max-width: 480px){
-    .tc-perk-grid{ grid-template-columns: 1fr; }
-    .tc-actions{ flex-direction: column; align-items: stretch; }
-    .tc-reset-btn{ width:100%; padding: 11px 16px; }
-    .hero-signature{ gap: 20px; }
-    .hero-signature .num.contact{ font-size:1.05rem; }
-  }
-
-  .card-plain{
-    background: var(--surface); border:1px solid var(--border-soft); border-radius: var(--radius);
-    padding: 22px 24px; margin-bottom: 20px;
-  }
-  .card-plain h3{ color: var(--gold-2); }
-
-  footer{
-    border-top: 1px solid var(--border-soft); padding: 34px 20px; text-align:center;
-    color: var(--muted-2); font-size:.85rem; position:relative; z-index:1;
-  }
-  footer a{ color: var(--muted); }
-
-  .no-results{ text-align:center; color: var(--muted-2); padding: 40px 0; display:none; }
-</style>
-
-<!-- =======================================================================
-     NUEVO BLOQUE DE ESTILOS — Barra "Más opciones" + Libro de colección
-     (No modifica ni sobrescribe el <style> original del sitio)
-======================================================================== -->
-<style>
-
-  /* ---------- BARRA SECUNDARIA: "MÁS OPCIONES" ---------- */
-  .subnav{
-    position: relative; z-index: 40;
-    background: rgba(8,10,26,0.75);
-    border-bottom: 1px solid var(--border-soft);
-    backdrop-filter: blur(10px);
-  }
-  .subnav-inner{
-    max-width: 1280px; margin: 0 auto; padding: 10px 20px;
-    display:flex; align-items:center; gap:14px; flex-wrap: nowrap;
-  }
-  .subnav-toggle{
-    flex-shrink:0; display:inline-flex; align-items:center; gap:8px;
-    background: var(--surface-solid); border:1px solid var(--border);
-    color: var(--text); font-family: var(--font-display); font-weight:600; font-size:.86rem;
-    padding: 9px 16px; border-radius: 999px; cursor:pointer;
-    transition: border-color .2s ease, box-shadow .25s ease, background .2s ease, color .2s ease;
-  }
-  .subnav-toggle:hover{ border-color: rgba(255,140,46,.5); box-shadow: 0 0 16px rgba(124,58,237,.3); }
-  .subnav-toggle.active{
-    color:#0a0a16; background: linear-gradient(135deg, var(--gold), var(--energy-orange));
-    border-color: transparent; box-shadow: 0 0 18px rgba(255,140,46,.45);
-  }
-  .subnav-toggle svg{ transition: transform .3s ease; flex-shrink:0; }
-  .subnav-toggle.active svg{ transform: rotate(90deg); }
-
-  .subnav-strip-wrap{
-    overflow:hidden; max-width:0; opacity:0;
-    transition: max-width .5s cubic-bezier(.4,0,.2,1), opacity .35s ease;
-  }
-  .subnav-strip-wrap.open{ max-width: 2400px; opacity:1; }
-
-  .subnav-strip{
-    display:flex; gap:8px; overflow-x:auto; padding: 3px 3px 8px;
-    scrollbar-width: thin;
-  }
-  .subnav-strip::-webkit-scrollbar{ height:6px; }
-  .subnav-strip::-webkit-scrollbar-thumb{ background: var(--border); border-radius:4px; }
-
-  .subnav-btn{
-    flex-shrink:0; white-space:nowrap; cursor:pointer;
-    background: transparent; border:1px solid var(--border-soft); color: var(--muted);
-    font-family: var(--font-display); font-weight:600; font-size:.82rem;
-    padding: 8px 14px; border-radius: 10px;
-    transition: color .15s ease, background .15s ease, border-color .15s ease, box-shadow .2s ease;
-  }
-  .subnav-btn:hover{ color:#fff; background: rgba(124,58,237,.14); border-color: rgba(124,58,237,.4); }
-  .subnav-btn.active{
-    color:#0a0a16; background: linear-gradient(135deg, var(--storm-purple-2), var(--storm-purple));
-    border-color: transparent; box-shadow: 0 0 14px rgba(157,92,255,.5);
-  }
-  .subnav-btn.is-book{ border-color: rgba(246,201,69,.45); color: var(--gold); }
-  .subnav-btn.is-book:hover{ background: rgba(246,201,69,.12); }
-  .subnav-btn.is-book.active{ background: linear-gradient(135deg, var(--gold), var(--energy-orange)); box-shadow: 0 0 16px rgba(255,140,46,.5); }
-
-  /* ---------- ÁREA DE CONTENIDO DE "MÁS OPCIONES" ---------- */
-  .mo-content{
-    display:none;
-    max-width: 1080px; margin: 0 auto; padding: 34px 20px 10px; position:relative; z-index:1;
-  }
-  .mo-content.open{ display:block; }
-
-  /* Tarjeta "Aún en desarrollo" */
-  .dev-card{
-    background: var(--surface); border:1px solid var(--border-soft); border-radius: var(--radius);
-    padding: 46px 26px; text-align:center; backdrop-filter: blur(6px);
-    display:none; flex-direction:column; align-items:center; gap:12px;
-  }
-  .dev-card .dev-icon{
-    width:56px; height:56px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center; font-size:1.6rem;
-    background: linear-gradient(135deg, rgba(124,58,237,.25), rgba(255,140,46,.2));
-    border: 1px solid var(--border);
-    box-shadow: 0 0 22px rgba(124,58,237,.3);
-  }
-  .dev-card h3{ margin:0; color: var(--gold-2); }
-  .dev-card p{ margin:0; color: var(--muted); max-width: 420px; }
-
-  /* ---------- LIBRO DE COLECCIÓN ---------- */
-  .lc-wrap{ display:none; }
-  .lc-wrap.open{ display:block; }
-
-  .lc-search{ position:relative; margin-bottom: 18px; }
-  .lc-search input{
-    width:100%; background: var(--surface-solid); border:1px solid var(--border);
-    color: var(--text); padding: 13px 40px 13px 40px; border-radius: 12px; font-size:.95rem;
-    font-family: var(--font-body);
-  }
-  .lc-search input::placeholder{ color: var(--muted-2); }
-  .lc-search svg{ position:absolute; left:14px; top:50%; transform:translateY(-50%); opacity:.6; }
-  .lc-search-clear{
-    position:absolute; right:8px; top:50%; transform:translateY(-50%);
-    width:26px; height:26px; border-radius:50%; border:none; cursor:pointer;
-    background: rgba(255,255,255,.08); color: var(--muted); font-size:.8rem; line-height:1;
-    display:flex; align-items:center; justify-content:center;
-    transition: background .15s ease, color .15s ease;
-  }
-  .lc-search-clear:hover{ background: rgba(255,84,112,.25); color:#fff; }
-  .lc-search-clear[hidden]{ display:none; }
-
-  /* Filtros rápidos de rareza */
-  .lc-filter-bar{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom: 24px; }
-  .lc-filter-btn{
-    cursor:pointer; background: var(--surface-solid); border:1px solid var(--border-soft); color: var(--muted);
-    font-family: var(--font-mono); font-size:.72rem; letter-spacing:.03em; text-transform:uppercase;
-    padding: 7px 14px; border-radius: 999px;
-    transition: color .15s ease, background .15s ease, border-color .15s ease, box-shadow .2s ease;
-  }
-  .lc-filter-btn:hover{ color:#fff; border-color: rgba(124,58,237,.4); }
-  .lc-filter-btn.active{
-    color:#0a0a16; background: linear-gradient(135deg, var(--storm-purple-2), var(--energy-orange));
-    border-color: transparent; box-shadow: 0 0 14px rgba(157,92,255,.4);
-  }
-
-  .lc-grid-layout{ display:grid; grid-template-columns: 300px 1fr; gap: 24px; align-items:start; }
-  @media (max-width: 820px){ .lc-grid-layout{ grid-template-columns: 1fr; } }
-
-  /* ---- Menú de categorías tipo acordeón ---- */
-  .lc-menu{ display:flex; flex-direction:column; gap:8px; }
-  .lc-menu-group{ display:flex; flex-direction:column; }
-
-  .lc-menu-item{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    width:100%; text-align:left; cursor:pointer;
-    background: var(--surface); border:1px solid var(--border-soft); border-radius: 12px;
-    padding: 13px 16px; color: var(--text); font-family: var(--font-display); font-weight:600; font-size:.92rem;
-    transition: border-color .2s ease, background .2s ease, box-shadow .2s ease, color .2s ease;
-  }
-  .lc-menu-item:hover{ border-color: rgba(255,140,46,.4); color:#fff; }
-  .lc-menu-item.active{
-    color: #0a0a16; background: linear-gradient(135deg, var(--gold), var(--energy-orange));
-    border-color: transparent; box-shadow: 0 0 18px rgba(255,140,46,.4);
-  }
-  .lc-menu-chevron{ flex-shrink:0; transition: transform .25s ease; opacity:.75; }
-  .lc-menu-group.open > .lc-menu-item .lc-menu-chevron{ transform: rotate(90deg); }
-  .lc-menu-group.open > .lc-menu-item{ border-bottom-left-radius:4px; border-bottom-right-radius:4px; }
-
-  .lc-submenu{
-    max-height:0; overflow:hidden;
-    transition: max-height .4s cubic-bezier(.4,0,.2,1);
-    display:flex; flex-direction:column; gap:4px;
-    padding-left: 10px; border-left: 2px solid var(--border-soft); margin-left: 12px;
-  }
-  .lc-menu-group.open > .lc-submenu{ padding-top:8px; padding-bottom:2px; }
-
-  .lc-submenu-item{
-    width:100%; text-align:left; cursor:pointer;
-    background:transparent; border:1px solid transparent; border-radius: 9px;
-    padding: 9px 12px; color: var(--muted); font-family: var(--font-mono); font-size:.8rem;
-    transition: color .15s ease, background .15s ease, border-color .15s ease;
-  }
-  .lc-submenu-item:hover{ color:#fff; background: rgba(124,58,237,.14); }
-  .lc-submenu-item.active{
-    color: var(--gold); background: rgba(246,201,69,.1); border-color: rgba(246,201,69,.35);
-  }
-
-  .lc-menu-item.lc-menu-flat.active{
-    color: #0a0a16; background: linear-gradient(135deg, var(--gold), var(--energy-orange));
-  }
-
-  /* ---- Panel de resultados ---- */
-  .lc-panel{
-    background: var(--surface); border:1px solid var(--border-soft); border-radius: var(--radius);
-    padding: 24px; min-height: 320px; backdrop-filter: blur(6px);
-  }
-  .lc-panel-title{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom: 18px; flex-wrap:wrap; }
-  .lc-panel-title h3{ margin:0; color: var(--gold-2); }
-  .lc-panel-title .lc-breadcrumb-sub{ color: var(--muted-2); font-weight:400; font-family: var(--font-mono); font-size:.85rem; }
-  .lc-result-count{
-    font-family: var(--font-mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.05em;
-    color: var(--muted-2); background: rgba(255,255,255,.05); padding:3px 10px; border-radius: 999px; flex-shrink:0;
-  }
-
-  .lc-empty{
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
-    text-align:center; min-height: 270px; color: var(--muted);
-  }
-  .lc-empty .lc-empty-icon{ font-size:2rem; opacity:.7; }
-  .lc-empty p{ margin:0; max-width: 380px; }
-
-  .lc-soon{
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
-    text-align:center; min-height: 270px; color: var(--muted); padding: 20px 16px;
-  }
-  .lc-soon strong{ color: var(--gold); }
-
-  .lc-no-results{
-    text-align:center; color: var(--muted); padding: 30px 10px;
-  }
-
-  /* ---- Cuadrícula de tarjetas ---- */
-  .lc-item-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap:16px; }
-
-  .lc-card{
-    position:relative; background: var(--surface-solid); border-radius: 14px; overflow:hidden;
-    padding: 12px 12px 14px; text-align:center; border: 2px solid var(--border-soft);
-    transition: transform .2s ease, box-shadow .25s ease;
-    display:flex; flex-direction:column;
-  }
-  .lc-card:hover{ transform: translateY(-3px); }
-
-  /* Contenedor reservado para la futura imagen del objeto (proporción 1:1) */
-  .card-image-holder{
-    position:relative; width:100%; aspect-ratio: 1 / 1; border-radius: 10px; overflow:hidden;
-    margin-bottom: 12px;
-    background: linear-gradient(160deg, rgba(124,58,237,.16), rgba(10,12,26,.6));
-    display:flex; align-items:center; justify-content:center;
-  }
-  .card-image-holder img.card-img{
-    display:none; /* se activa por JS cuando exista una URL real */
-    width:100%; height:100%; object-fit:cover;
-  }
-  .card-image-holder .card-image-fallback{
-    display:flex; align-items:center; justify-content:center;
-    width:100%; height:100%; font-size:1.9rem; opacity:.55;
-  }
-  .card-image-holder .card-image-fallback svg{ opacity:.8; }
-
-  .lc-card-name{ margin:0 0 4px; font-size:.86rem; line-height:1.25; color:#fff; font-family: var(--font-body); font-weight:600; }
-  .lc-card-role{
-    margin:0; font-family: var(--font-mono); font-size:.65rem; letter-spacing:.03em;
-    color: var(--muted-2); text-transform:none;
-  }
-
-  /* ---- Sistema de 6 rarezas oficiales ---- */
-  .lc-card.rarity-comun{
-    border-color: rgba(158,164,184,.5);
-    box-shadow: 0 0 14px rgba(158,164,184,.15);
-  }
-  .lc-card.rarity-comun .card-image-holder{ background: linear-gradient(160deg, rgba(158,164,184,.22), rgba(10,12,26,.6)); }
-
-  .lc-card.rarity-poco-comun{
-    border-color: rgba(61,220,132,.55);
-    box-shadow: 0 0 18px rgba(61,220,132,.2);
-  }
-  .lc-card.rarity-poco-comun .card-image-holder{ background: linear-gradient(160deg, rgba(61,220,132,.25), rgba(10,12,26,.6)); }
-
-  .lc-card.rarity-raro{
-    border-color: rgba(56,189,248,.6);
-    box-shadow: 0 0 20px rgba(56,189,248,.22);
-  }
-  .lc-card.rarity-raro .card-image-holder{ background: linear-gradient(160deg, rgba(56,189,248,.28), rgba(10,12,26,.6)); }
-
-  .lc-card.rarity-epico{
-    border-color: rgba(124,58,237,.65);
-    box-shadow: 0 0 22px rgba(124,58,237,.3);
-  }
-  .lc-card.rarity-epico .card-image-holder{ background: linear-gradient(160deg, rgba(124,58,237,.32), rgba(10,12,26,.6)); }
-
-  .lc-card.rarity-legendario{
-    border-color: rgba(255,140,46,.65);
-    box-shadow: 0 0 24px rgba(255,140,46,.3);
-  }
-  .lc-card.rarity-legendario .card-image-holder{ background: linear-gradient(160deg, rgba(255,140,46,.32), rgba(10,12,26,.6)); }
-
-  .lc-card.rarity-mitico{
-    border-color: rgba(246,201,69,.75);
-    box-shadow: 0 0 28px rgba(246,201,69,.38), inset 0 0 22px rgba(246,201,69,.08);
-    background: linear-gradient(160deg, rgba(94,58,10,.3), var(--surface-solid) 65%);
-  }
-  .lc-card.rarity-mitico .card-image-holder{
-    background: linear-gradient(160deg, rgba(246,201,69,.4), rgba(255,140,46,.12));
-  }
-
-  .lc-rarity-tag{
-    display:inline-block; align-self:center; margin-top: 8px;
-    font-family: var(--font-mono); font-size:.6rem; letter-spacing:.05em;
-    text-transform:uppercase; padding: 3px 9px; border-radius: 999px;
-  }
-  .rarity-comun .lc-rarity-tag{ color:#c3c8d6; background: rgba(158,164,184,.14); border:1px solid rgba(158,164,184,.4); }
-  .rarity-poco-comun .lc-rarity-tag{ color: var(--nature); background: rgba(61,220,132,.12); border:1px solid rgba(61,220,132,.4); }
-  .rarity-raro .lc-rarity-tag{ color: var(--water); background: rgba(56,189,248,.12); border:1px solid rgba(56,189,248,.4); }
-  .rarity-epico .lc-rarity-tag{ color: var(--storm-purple-2); background: rgba(124,58,237,.14); border:1px solid rgba(124,58,237,.45); }
-  .rarity-legendario .lc-rarity-tag{ color: var(--energy-orange); background: rgba(255,140,46,.14); border:1px solid rgba(255,140,46,.45); }
-  .rarity-mitico .lc-rarity-tag{ color: var(--gold); background: rgba(246,201,69,.16); border:1px solid rgba(246,201,69,.5); }
-
-  .lc-demo-note{
-    margin-top: 18px; font-family: var(--font-mono); font-size:.72rem; color: var(--muted-2);
-    text-align:center;
-  }
-
-  @media (max-width: 480px){
-    .subnav-toggle{ font-size:.8rem; padding:8px 13px; }
-    .dev-card{ padding: 34px 18px; }
-    .lc-item-grid{ grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); }
-  }
-</style>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/collection-book.css">
 </head>
 <body>
 
@@ -770,7 +20,7 @@
 
 <header class="topbar">
   <div class="topbar-inner">
-    <div class="brand"><span class="eye"></span> Ojo de la Tormenta</div>
+    <div class="brand">Enciclopedia</div>
     <nav class="tabs" id="tabs" aria-label="Secciones de la guía">
       <button class="tab-btn active" data-target="inicio">Inicio</button>
       <button class="tab-btn" data-target="heroes">1 · Héroes</button>
@@ -781,8 +31,10 @@
       <button class="tab-btn" data-target="lore">6 · Lore</button>
       <button class="tab-btn" data-target="endgame">7 · End-Game</button>
     </nav>
-    <div class="search-wrap">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <div class="search-wrap" id="searchWrap">
+      <button type="button" class="search-toggle-btn" id="searchToggleBtn" aria-label="Buscar en la guía" aria-expanded="false">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
       <input type="text" id="searchInput" placeholder="Buscar en la guía…" aria-label="Buscar en la guía">
     </div>
   </div>
@@ -828,7 +80,7 @@
     <div class="section-head" style="background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80');">
       <span class="idx">LIBRO DE COLECCIÓN</span>
       <h2>Catálogo de Salvar el Mundo</h2>
-      <p>Explora héroes, supervivientes, armas, trampas y esquemas del juego. Los nombres de los objetos se muestran en su idioma original para que coincidan con la búsqueda del meta.</p>
+      <p>Explora héroes, supervivientes, armas, trampas y esquemas del juego. Los nombres propios de cada objeto se muestran en su idioma original, tal como aparecen en el juego.</p>
     </div>
 
     <div class="lc-search">
@@ -844,6 +96,12 @@
       <button class="lc-filter-btn" data-rarity-filter="raro" type="button">Raro</button>
     </div>
 
+    <div class="lc-status-bar" id="lcStatusBar" role="group" aria-label="Filtrar por estado de registro">
+      <button class="lc-status-btn active" data-status-filter="all" type="button">Todos los objetos</button>
+      <button class="lc-status-btn" data-status-filter="registered" type="button">Registrados / Desbloqueados</button>
+      <button class="lc-status-btn" data-status-filter="pending" type="button">Pendientes por registrar</button>
+    </div>
+
     <div class="lc-grid-layout">
       <nav class="lc-menu" id="lcMenu" aria-label="Categorías del Libro de colección">
 
@@ -853,22 +111,22 @@
             <svg class="lc-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
           </button>
           <div class="lc-submenu" data-submenu="heroes">
-            <button class="lc-submenu-item" data-cat="heroes" data-sub="soldiers" type="button">Soldiers</button>
-            <button class="lc-submenu-item" data-cat="heroes" data-sub="constructors" type="button">Constructors</button>
+            <button class="lc-submenu-item" data-cat="heroes" data-sub="soldiers" type="button">Soldados</button>
+            <button class="lc-submenu-item" data-cat="heroes" data-sub="constructors" type="button">Constructores</button>
             <button class="lc-submenu-item" data-cat="heroes" data-sub="ninjas" type="button">Ninjas</button>
-            <button class="lc-submenu-item" data-cat="heroes" data-sub="outlanders" type="button">Outlanders</button>
+            <button class="lc-submenu-item" data-cat="heroes" data-sub="outlanders" type="button">Trotamundos</button>
           </div>
         </div>
 
         <div class="lc-menu-group" data-group="personal">
           <button class="lc-menu-item" data-cat="personal" type="button" aria-expanded="false">
-            <span>Personal</span>
+            <span class="lc-menu-label-stack"><span class="lc-menu-label-top">Personal</span><span class="lc-menu-sub-hint">Supervivientes y Defensores</span></span>
             <svg class="lc-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
           </button>
           <div class="lc-submenu" data-submenu="personal">
-            <button class="lc-submenu-item" data-cat="personal" data-sub="survivors" type="button">Survivors</button>
-            <button class="lc-submenu-item" data-cat="personal" data-sub="lead_survivors" type="button">Lead Survivors</button>
-            <button class="lc-submenu-item" data-cat="personal" data-sub="defenders" type="button">Defenders</button>
+            <button class="lc-submenu-item" data-cat="personal" data-sub="survivors" type="button">Supervivientes</button>
+            <button class="lc-submenu-item" data-cat="personal" data-sub="lead_survivors" type="button">Líderes</button>
+            <button class="lc-submenu-item" data-cat="personal" data-sub="defenders" type="button">Defensores</button>
           </div>
         </div>
 
@@ -878,11 +136,11 @@
             <svg class="lc-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
           </button>
           <div class="lc-submenu" data-submenu="ranged">
-            <button class="lc-submenu-item" data-cat="ranged" data-sub="assault_rifles" type="button">Assault Rifles</button>
-            <button class="lc-submenu-item" data-cat="ranged" data-sub="shotguns" type="button">Shotguns</button>
-            <button class="lc-submenu-item" data-cat="ranged" data-sub="pistols_smgs" type="button">Pistols &amp; SMGs</button>
-            <button class="lc-submenu-item" data-cat="ranged" data-sub="sniper_rifles" type="button">Sniper Rifles</button>
-            <button class="lc-submenu-item" data-cat="ranged" data-sub="explosive_weapons" type="button">Explosive Weapons</button>
+            <button class="lc-submenu-item" data-cat="ranged" data-sub="assault_rifles" type="button">Fusiles de asalto</button>
+            <button class="lc-submenu-item" data-cat="ranged" data-sub="shotguns" type="button">Escopetas</button>
+            <button class="lc-submenu-item" data-cat="ranged" data-sub="pistols_smgs" type="button">Pistolas y subfusiles</button>
+            <button class="lc-submenu-item" data-cat="ranged" data-sub="sniper_rifles" type="button">Rifles de francotirador</button>
+            <button class="lc-submenu-item" data-cat="ranged" data-sub="explosive_weapons" type="button">Armas explosivas</button>
           </div>
         </div>
 
@@ -892,11 +150,11 @@
             <svg class="lc-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
           </button>
           <div class="lc-submenu" data-submenu="melee">
-            <button class="lc-submenu-item" data-cat="melee" data-sub="swords" type="button">Swords</button>
-            <button class="lc-submenu-item" data-cat="melee" data-sub="axes" type="button">Axes</button>
-            <button class="lc-submenu-item" data-cat="melee" data-sub="spears" type="button">Spears</button>
-            <button class="lc-submenu-item" data-cat="melee" data-sub="scythes" type="button">Scythes</button>
-            <button class="lc-submenu-item" data-cat="melee" data-sub="clubs_hardware" type="button">Clubs &amp; Hardware</button>
+            <button class="lc-submenu-item" data-cat="melee" data-sub="swords" type="button">Espadas</button>
+            <button class="lc-submenu-item" data-cat="melee" data-sub="axes" type="button">Hachas</button>
+            <button class="lc-submenu-item" data-cat="melee" data-sub="spears" type="button">Lanzas</button>
+            <button class="lc-submenu-item" data-cat="melee" data-sub="scythes" type="button">Guadañas</button>
+            <button class="lc-submenu-item" data-cat="melee" data-sub="clubs_hardware" type="button">Mazos y herramientas</button>
           </div>
         </div>
 
@@ -906,9 +164,9 @@
             <svg class="lc-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
           </button>
           <div class="lc-submenu" data-submenu="traps">
-            <button class="lc-submenu-item" data-cat="traps" data-sub="wall_traps" type="button">Wall Traps</button>
-            <button class="lc-submenu-item" data-cat="traps" data-sub="floor_traps" type="button">Floor Traps</button>
-            <button class="lc-submenu-item" data-cat="traps" data-sub="ceiling_traps" type="button">Ceiling Traps</button>
+            <button class="lc-submenu-item" data-cat="traps" data-sub="wall_traps" type="button">Trampas de pared</button>
+            <button class="lc-submenu-item" data-cat="traps" data-sub="floor_traps" type="button">Trampas de suelo</button>
+            <button class="lc-submenu-item" data-cat="traps" data-sub="ceiling_traps" type="button">Trampas de techo</button>
           </div>
         </div>
 
@@ -940,14 +198,44 @@
 
 </div>
 
+<!-- Modal de ficha técnica del Libro de colección -->
+<div class="lc-modal-overlay" id="lcModalOverlay">
+  <div class="lc-modal-card" id="lcModalCard" role="dialog" aria-modal="true" aria-labelledby="lcModalName">
+    <button type="button" class="lc-modal-close" id="lcModalClose" aria-label="Cerrar ficha">✕</button>
+    <div class="lc-modal-band" id="lcModalBand">
+      <span class="lc-rarity-tag" id="lcModalRarityTag"></span>
+    </div>
+    <div class="lc-modal-body">
+      <div class="card-media-slot" id="lcModalMedia">
+        <span class="media-slot-fallback" aria-hidden="true">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2.5"/><circle cx="9" cy="9" r="1.8"/><path d="M21 15l-5.2-5.2a2 2 0 0 0-2.8 0L3 19"/>
+          </svg>
+        </span>
+      </div>
+      <h3 class="lc-modal-name" id="lcModalName"></h3>
+      <p class="lc-modal-role" id="lcModalRole"></p>
+
+      <div class="lc-modal-stats" id="lcModalStats"></div>
+      <p class="lc-modal-illustrative">Ficha ilustrativa de la arquitectura — a la espera de la base de datos real.</p>
+
+      <div class="lc-modal-nav">
+        <button type="button" class="lc-modal-nav-btn" id="lcModalPrev">‹ Anterior</button>
+        <button type="button" class="lc-modal-nav-btn" id="lcModalNext">Siguiente ›</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <section class="hero">
+
   <div class="hero-bg" aria-hidden="true"></div>
   <div class="lightning-flash" aria-hidden="true"></div>
   <div class="hero-inner">
     <model-viewer
       id="stormKingModel"
       class="reveal"
-      src="storm_king.glb"
+      src="assets/storm_king.glb"
       alt="Modelo 3D del Rey de la Tormenta"
       auto-rotate
       auto-rotate-delay="0"
@@ -961,17 +249,27 @@
       loading="eager"
       reveal="auto">
       <div slot="poster" class="model-poster"><span class="model-poster-dot"></span> Invocando al Rey de la Tormenta…</div>
-      <div slot="error" class="model-error"><span>⚡ El modelo 3D no pudo cargarse. Comprueba que <code>storm_king.glb</code> esté junto a <code>index.html</code> y que el sitio se sirva por http(s) (Netlify o un servidor local), no abierto directamente como archivo.</span></div>
+      <div slot="error" class="model-error"><span>⚡ El modelo 3D no pudo cargarse. Comprueba que <code>assets/storm_king.glb</code> exista junto a <code>index.html</code> y que el sitio se sirva por http(s) (Netlify o un servidor local), no abierto directamente como archivo.</span></div>
     </model-viewer>
     <span class="eyebrow reveal"><span class="dot"></span> Guía comunitaria no oficial</span>
     <h1 class="reveal d1">La guía definitiva de<br>Salvar el Mundo</h1>
     <p class="lead reveal d2">Ventajas, trampas, IA de enemigos, economía de esquemas, supervivientes, lore y las estrategias de end-game que la comunidad de r/FORTnITE ha perfeccionado desde 2017.</p>
-    <div class="hero-stats hero-signature reveal d3">
-      <div><div class="num">AleMgc</div><div class="label">Creador</div></div>
-      <div><div class="num contact">+52 8123823090</div><div class="label">Contacto</div></div>
+    <div class="contact-widget reveal d3">
+      <button type="button" class="contact-toggle" id="contactToggle" aria-expanded="false" aria-controls="contactPanel">
+        Contacto
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
     </div>
   </div>
 </section>
+
+<!-- Panel de contacto: vive fuera del hero (que tiene overflow:hidden) para no cortarse -->
+<div class="contact-panel" id="contactPanel">
+  <div class="contact-toast" id="contactToast">¡Número copiado!</div>
+  <div class="contact-number">+52 8123823090</div>
+  <button type="button" class="contact-action copy" id="contactCopyBtn">📋 Copiar número</button>
+  <a class="contact-action whatsapp" id="contactWhatsappBtn" href="https://wa.me/528123823090" target="_blank" rel="noopener">💬 Enviar mensaje por WhatsApp</a>
+</div>
 
 <main>
 
@@ -1995,859 +1293,7 @@
   <p>Guía comunitaria no oficial sobre Fortnite: Salvar el Mundo, elaborada con información pública de Epic Games y la comunidad (r/FORTnITE, Discord). Fortnite es marca registrada de Epic Games, Inc. Imágenes de cabecera: Unsplash.</p>
 </footer>
 
-<script>
-(function(){
-  // ---- Fondo de niebla/partículas de la Tormenta (canvas) ----
-  var canvas = document.getElementById('fogCanvas');
-  var ctx = canvas.getContext('2d');
-  var particles = [];
-  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function resize(){
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  function makeParticle(){
-    return {
-      x: Math.random() * canvas.width,
-      y: canvas.height + Math.random() * 200,
-      r: 60 + Math.random() * 140,
-      speed: 0.15 + Math.random() * 0.35,
-      drift: (Math.random() - 0.5) * 0.3,
-      hue: Math.random() > 0.5 ? 'rgba(124,58,237,' : 'rgba(255,140,46,',
-      alpha: 0.02 + Math.random() * 0.05
-    };
-  }
-  var count = window.innerWidth < 700 ? 14 : 26;
-  for(var i=0;i<count;i++){ particles.push(makeParticle()); }
-
-  function tick(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    particles.forEach(function(p){
-      p.y -= p.speed;
-      p.x += p.drift;
-      if(p.y < -p.r){ Object.assign(p, makeParticle()); p.y = canvas.height + p.r; }
-      var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
-      grad.addColorStop(0, p.hue + p.alpha + ')');
-      grad.addColorStop(1, p.hue + '0)');
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-      ctx.fill();
-    });
-    if(!reduceMotion){ requestAnimationFrame(tick); }
-  }
-  if(!reduceMotion){ requestAnimationFrame(tick); } else { tick(); }
-
-  // ---- Tabs ----
-  var tabs = document.querySelectorAll('.tab-btn');
-  var panels = document.querySelectorAll('.panel');
-  tabs.forEach(function(btn){
-    btn.addEventListener('click', function(){
-      tabs.forEach(function(b){ b.classList.remove('active'); });
-      panels.forEach(function(p){ p.classList.remove('active'); });
-      btn.classList.add('active');
-      var target = document.getElementById(btn.getAttribute('data-target'));
-      if(target){ target.classList.add('active'); }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      requestAnimationFrame(observeReveals);
-    });
-  });
-
-  // ---- Acordeón ----
-  document.querySelectorAll('.acc-header').forEach(function(header){
-    header.addEventListener('click', function(){
-      var item = header.closest('.acc-item');
-      var panel = item.querySelector('.acc-panel');
-      var isOpen = item.classList.contains('open');
-      if(isOpen){
-        panel.style.maxHeight = null;
-        item.classList.remove('open');
-      } else {
-        item.classList.add('open');
-        panel.style.maxHeight = panel.scrollHeight + 'px';
-      }
-    });
-  });
-
-  // ---- Scroll reveal (IntersectionObserver) ----
-  var revealEls = document.querySelectorAll('.reveal');
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(entry){
-      if(entry.isIntersecting){
-        entry.target.classList.add('in-view');
-        io.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12 });
-  function observeReveals(){
-    document.querySelectorAll('.hero .reveal:not(.in-view), .panel.active .reveal:not(.in-view)').forEach(function(el){ io.observe(el); });
-  }
-  observeReveals();
-
-  // ---- Element calculator ----
-  var elemBtns = document.querySelectorAll('.elem-btn');
-  var result = document.getElementById('calcResult');
-  var recommendation = {
-    fuego:      { rec: 'Agua 💧',       weak: 'El Fuego se apaga con Agua. Evita llevar armas de Naturaleza contra enemigos de Fuego.' },
-    naturaleza: { rec: 'Fuego 🔥',      weak: 'La Naturaleza se quema con Fuego. Evita Agua, es poco eficaz aquí.' },
-    agua:       { rec: 'Naturaleza 🌿', weak: 'El Agua es absorbida por la Naturaleza. Evita Fuego contra estos enemigos.' },
-    energia:    { rec: 'Energía ⚡ o crítico', weak: 'La Energía no tiene una debilidad marcada: usa tu arma de mayor daño crítico o Energía como comodín seguro.' }
-  };
-  elemBtns.forEach(function(btn){
-    btn.addEventListener('click', function(){
-      elemBtns.forEach(function(b){ b.classList.remove('selected'); });
-      btn.classList.add('selected');
-      var el = btn.getAttribute('data-el');
-      var data = recommendation[el];
-      result.innerHTML =
-        '<div class="rec-elem">Usa: ' + data.rec + '</div>' +
-        '<p style="margin:0 0 4px;">contra un enemigo de <strong>' + btn.textContent.trim() + '</strong></p>' +
-        '<div class="weak">' + data.weak + '</div>';
-    });
-  });
-
-  // ---- Simulador de Perks de Trampas ----
-  (function(){
-    var trapSelect = document.getElementById('tcTrapSelect');
-    var perkSelects = Array.prototype.slice.call(document.querySelectorAll('.tc-perk-select'));
-    var resetBtn = document.getElementById('tcResetBtn');
-    if(!trapSelect || !perkSelects.length) return;
-
-    // Dropdowns personalizados: no usamos <select>, por lo que Android/iOS nunca abre
-    // el selector nativo blanco del sistema. La lógica del simulador sigue usando valores simples.
-    var dropdowns = [];
-    var openDropdown = null;
-
-    function getValue(el){ return el.getAttribute('data-value') || 'none'; }
-
-    function closeDropdown(el){
-      if(!el) return;
-      el.classList.remove('open');
-      el.setAttribute('aria-expanded','false');
-      if(openDropdown === el) openDropdown = null;
-    }
-
-    function closeAllDropdowns(except){
-      dropdowns.forEach(function(d){ if(d !== except) closeDropdown(d); });
-    }
-
-    function setValue(el, value, emit){
-      el.setAttribute('data-value', value);
-      var option = el.querySelector('.tc-option[data-value="' + value + '"]');
-      var valueEl = el.querySelector('.tc-custom-value');
-      if(option && valueEl) valueEl.textContent = option.textContent.trim();
-      el.querySelectorAll('.tc-option').forEach(function(opt){
-        var selected = opt.getAttribute('data-value') === value;
-        opt.classList.toggle('selected', selected);
-        opt.setAttribute('aria-selected', selected ? 'true' : 'false');
-      });
-      if(emit){
-        el.dispatchEvent(new CustomEvent('tc-change', {detail:{value:value}, bubbles:false}));
-      }
-    }
-
-    function updateDisabledOptions(){
-      var chosen = perkSelects.map(getValue).filter(function(v){ return v !== 'none'; });
-      perkSelects.forEach(function(sel){
-        var current = getValue(sel);
-        sel.querySelectorAll('.tc-option').forEach(function(opt){
-          var v = opt.getAttribute('data-value');
-          var disabled = v !== 'none' && chosen.indexOf(v) !== -1 && v !== current;
-          opt.classList.toggle('disabled', disabled);
-          opt.setAttribute('aria-disabled', disabled ? 'true' : 'false');
-        });
-      });
-    }
-
-    function setupDropdown(el){
-      var trigger = el.querySelector('.tc-custom-trigger');
-      if(!trigger) return;
-      dropdowns.push(el);
-      setValue(el, getValue(el), false);
-
-      trigger.addEventListener('click', function(e){
-        e.stopPropagation();
-        if(el.classList.contains('open')) closeDropdown(el);
-        else {
-          closeAllDropdowns(el);
-          updateDisabledOptions();
-          el.classList.add('open');
-          el.setAttribute('aria-expanded','true');
-          openDropdown = el;
-        }
-      });
-
-      el.querySelectorAll('.tc-option').forEach(function(option){
-        option.addEventListener('click', function(e){
-          e.stopPropagation();
-          if(option.classList.contains('disabled')) return;
-          setValue(el, option.getAttribute('data-value'), true);
-          closeDropdown(el);
-          updateDisabledOptions();
-        });
-      });
-
-      el.addEventListener('keydown', function(e){
-        if(e.key === 'Escape') { closeDropdown(el); trigger.focus(); return; }
-        if((e.key === 'Enter' || e.key === ' ') && document.activeElement === el){
-          e.preventDefault(); trigger.click();
-        }
-      });
-    }
-
-    document.querySelectorAll('.tc-custom-select').forEach(setupDropdown);
-    document.addEventListener('click', function(){ closeAllDropdowns(null); });
-    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeAllDropdowns(null); });
-
-    // Valores base ilustrativos por trampa: durabilidad (HP), recarga (s), daño/impacto por uso.
-    var TRAPS = {
-      // Pared
-      lanzador:     { label: 'Lanzador de Pared',           durability: 500, reload: 1.5,  damage: 15 },
-      dardos:       { label: 'Dardos de Pared',             durability: 300, reload: 0.75, damage: 35 },
-      dinamo_pared: { label: 'Dínamo de Pared (Eléctrica)', durability: 350, reload: 1.0,  damage: 40 },
-      // Techo
-      electrico:    { label: 'Campo Eléctrico de Techo',    durability: 350, reload: 0.5,  damage: 50 },
-      zapper_techo: { label: 'Zapper de Techo',             durability: 300, reload: 0.6,  damage: 45 },
-      // Suelo / Piso
-      alquitran:    { label: 'Trampa de Alquitrán',         durability: 400, reload: 3.0,  damage: 5  },
-      puas_suelo:   { label: 'Trampa de Púas de Suelo',     durability: 450, reload: 1.2,  damage: 30 },
-      fuego_suelo:  { label: 'Parrilla de Fuego de Piso',   durability: 400, reload: 1.5,  damage: 60 },
-      gas:          { label: 'Trampa de Gas',               durability: 250, reload: 2.0,  damage: 20 },
-      congelacion:  { label: 'Trampa de Congelación',       durability: 300, reload: 2.5,  damage: 10 },
-      dano_suelo:   { label: 'Trampa de Daño',              durability: 350, reload: 1.0,  damage: 25 }
-    };
-
-    // Efecto de cada perk. En una trampa Legendaria (Nivel 130) real cada una de las 5 ranuras
-    // aloja un perk DISTINTO: no pueden repetirse dentro de la misma trampa.
-    var PERKS = {
-      recarga:     { tag: 'purple', label: '+ Velocidad de recarga', reloadMult: 0.85 },
-      impacto:     { tag: 'fire',   label: '+ Impacto',              damageMult: 1.25 },
-      durabilidad: { tag: 'water',  label: '+ Durabilidad',          durabilityFlat: 150 },
-      dano:        { tag: 'gold',   label: '+ Daño',                 damageMult: 1.20 },
-      estructura:  { tag: 'nature', label: '+ Vida de estructura',   structureFlat: 200 }
-    };
-
-    var elDurability = document.getElementById('tcDurability');
-    var elReload = document.getElementById('tcReload');
-    var elDamage = document.getElementById('tcDamage');
-    var elSummary = document.getElementById('tcSummary');
-    var elStructureNote = document.getElementById('tcStructureNote');
-    var elStructureValue = document.getElementById('tcStructureValue');
-
-    function enforceUniquePerks(){ updateDisabledOptions(); }
-
-    function calculate(){
-      enforceUniquePerks();
-
-      var trap = TRAPS[getValue(trapSelect)];
-      // Algunas trampas del selector son extensiones del catálogo visual y no tienen
-      // estadísticas base en este simulador; mantienen valores seguros para no romperlo.
-      if(!trap) trap = {durability:500, reload:1.5, damage:15};
-      var durability = trap.durability;
-      var reload = trap.reload;
-      var damage = trap.damage;
-      var structureBonus = 0;
-      var counts = {};
-
-      perkSelects.forEach(function(sel){
-        var v = getValue(sel);
-        if(v === 'none') return;
-        counts[v] = (counts[v] || 0) + 1;
-      });
-
-      if(counts.durabilidad) durability += counts.durabilidad * PERKS.durabilidad.durabilityFlat;
-      if(counts.recarga) reload *= Math.pow(PERKS.recarga.reloadMult, counts.recarga);
-      if(counts.impacto) damage *= Math.pow(PERKS.impacto.damageMult, counts.impacto);
-      if(counts.dano) damage *= Math.pow(PERKS.dano.damageMult, counts.dano);
-      if(counts.estructura) structureBonus += counts.estructura * PERKS.estructura.structureFlat;
-
-      elDurability.innerHTML = Math.round(durability);
-      elReload.innerHTML = reload.toFixed(2) + '<span class="tc-stat-unit">s</span>';
-      elDamage.innerHTML = Math.round(damage);
-
-      if(structureBonus > 0){
-        elStructureValue.textContent = structureBonus;
-        elStructureNote.style.display = 'block';
-      } else {
-        elStructureNote.style.display = 'none';
-      }
-
-      var tagsHtml = '';
-      Object.keys(counts).forEach(function(key){
-        var perk = PERKS[key];
-        var n = counts[key];
-        tagsHtml += '<span class="tag ' + perk.tag + '">' + perk.label + (n > 1 ? ' ×' + n : '') + '</span>';
-      });
-      elSummary.innerHTML = tagsHtml || '<span style="color:var(--muted-2);font-size:.85rem;">Ninguna ranura configurada todavía.</span>';
-    }
-
-    trapSelect.addEventListener('tc-change', calculate);
-    perkSelects.forEach(function(sel){ sel.addEventListener('tc-change', calculate); });
-
-    if(resetBtn){
-      resetBtn.addEventListener('click', function(){
-        perkSelects.forEach(function(sel){ setValue(sel, 'none', false); });
-        updateDisabledOptions();
-        calculate();
-      });
-    }
-
-    calculate();
-  })();
-
-  // ---- Search filter: filtra tarjetas del acordeón y las abre automáticamente ----
-  var searchInput = document.getElementById('searchInput');
-  var noResults = document.getElementById('noResults');
-  searchInput.addEventListener('input', function(){
-    var q = searchInput.value.trim().toLowerCase();
-
-    if(q === ''){
-      document.querySelectorAll('.acc-item').forEach(function(item){
-        item.classList.remove('hidden-by-search');
-      });
-      noResults.style.display = 'none';
-      return;
-    }
-
-    var anyMatch = false;
-    var firstMatchPanel = null;
-
-    document.querySelectorAll('.panel').forEach(function(panel){
-      panel.querySelectorAll('.acc-item').forEach(function(item){
-        var text = item.textContent.toLowerCase();
-        var matches = text.indexOf(q) !== -1;
-        item.classList.toggle('hidden-by-search', !matches);
-        if(matches){
-          anyMatch = true;
-          if(!firstMatchPanel) firstMatchPanel = panel;
-          var panelEl = item.querySelector('.acc-panel');
-          if(!item.classList.contains('open')){
-            item.classList.add('open');
-            panelEl.style.maxHeight = panelEl.scrollHeight + 'px';
-          }
-        }
-      });
-    });
-
-    if(firstMatchPanel){
-      tabs.forEach(function(b){ b.classList.remove('active'); });
-      panels.forEach(function(p){ p.classList.remove('active'); });
-      firstMatchPanel.classList.add('active');
-      var matchingTab = document.querySelector('.tab-btn[data-target="' + firstMatchPanel.id + '"]');
-      if(matchingTab) matchingTab.classList.add('active');
-      requestAnimationFrame(observeReveals);
-    }
-
-    noResults.style.display = anyMatch ? 'none' : 'block';
-  });
-})();
-</script>
-
-<!-- =======================================================================
-     NUEVO SCRIPT — Barra "Más opciones" + Libro de colección
-     (No modifica el <script> original del sitio)
-======================================================================== -->
-<script>
-(function(){
-
-  // ---------- Barra secundaria: apertura/cierre horizontal ----------
-  var subnavToggle    = document.getElementById('subnavToggle');
-  var subnavStripWrap = document.getElementById('subnavStripWrap');
-  var subnavBtns      = document.querySelectorAll('.subnav-btn');
-  var moContent       = document.getElementById('moContent');
-  var devCard         = document.getElementById('devCard');
-  var devCardTitle    = document.getElementById('devCardTitle');
-  var lcWrap          = document.getElementById('lcWrap');
-
-  // Oculta por completo el módulo "Más opciones" / Libro de colección:
-  // retrae la tira horizontal, quita el estado activo de sus botones,
-  // y cierra tanto el contenedor de contenido (#moContent) como el
-  // Libro de colección y la tarjeta "Aún en desarrollo" que pudiera contener.
-  function closeMoContent(){
-    subnavStripWrap.classList.remove('open');
-    subnavToggle.classList.remove('active');
-    subnavToggle.setAttribute('aria-expanded', 'false');
-
-    subnavBtns.forEach(function(b){ b.classList.remove('active'); });
-
-    moContent.classList.remove('open');   // #moContent -> display:none (CSS)
-    lcWrap.classList.remove('open');      // Libro de colección -> display:none (CSS)
-    devCard.style.display = 'none';       // Tarjeta "Aún en desarrollo" -> oculta
-  }
-
-  if(subnavToggle){
-    subnavToggle.addEventListener('click', function(){
-      var willOpen = !subnavStripWrap.classList.contains('open');
-
-      if(willOpen){
-        // Abrir: solo despliega la tira horizontal. NO muestra contenido todavía.
-        subnavStripWrap.classList.add('open');
-        subnavToggle.classList.add('active');
-        subnavToggle.setAttribute('aria-expanded', 'true');
-      } else {
-        // Cerrar: retrae la tira Y oculta por completo el Libro de colección
-        // (o la tarjeta "Aún en desarrollo") si estuviera visible.
-        closeMoContent();
-      }
-    });
-  }
-
-  var sectionLabels = {
-    s2:'Sección 2', s3:'Sección 3', s4:'Sección 4', s5:'Sección 5', s6:'Sección 6',
-    s7:'Sección 7', s8:'Sección 8', s9:'Sección 9', s10:'Sección 10'
-  };
-
-  subnavBtns.forEach(function(btn){
-    btn.addEventListener('click', function(){
-      subnavBtns.forEach(function(b){ b.classList.remove('active'); });
-      btn.classList.add('active');
-
-      var target = btn.getAttribute('data-mo-target');
-      moContent.classList.add('open');
-
-      if(target === 'libro'){
-        lcWrap.classList.add('open');
-        devCard.style.display = 'none';
-      } else {
-        lcWrap.classList.remove('open');
-        devCard.style.display = 'flex';
-        devCardTitle.textContent = (sectionLabels[target] || 'Esta sección') + ' — Aún en desarrollo';
-      }
-
-      moContent.scrollIntoView({ behavior:'smooth', block:'start' });
-    });
-  });
-
-  // ---------- Integración con la barra de navegación PRINCIPAL ----------
-  // Al elegir cualquier pestaña principal (Inicio, Héroes, Trampas, IA, etc.)
-  // el módulo "Más opciones" / Libro de colección debe cerrarse de inmediato,
-  // sin tocar el listener original de esas pestañas (solo se añade este extra).
-  document.querySelectorAll('.tab-btn').forEach(function(mainTabBtn){
-    mainTabBtn.addEventListener('click', function(){
-      closeMoContent();
-    });
-  });
-
-  // ======================================================================
-  // LIBRO DE COLECCIÓN — Base de datos, navegación y filtros
-  // ======================================================================
-
-  // ---------- Utilidades de rareza ----------
-  // Clave interna (ES, usada en clases CSS) -> etiqueta oficial en inglés
-  // que se muestra junto al rol del objeto (ej. "Legendary Soldier").
-  var RARITY_EN = {
-    'comun':        'Common',
-    'poco-comun':   'Uncommon',
-    'raro':         'Rare',
-    'epico':        'Epic',
-    'legendario':   'Legendary',
-    'mitico':       'Mythic'
-  };
-  var RARITY_ES = {
-    'comun':'Común', 'poco-comun':'Poco común', 'raro':'Raro',
-    'epico':'Épico', 'legendario':'Legendario', 'mitico':'Mítico'
-  };
-
-  // ---------- Etiquetas ES de categorías y subcategorías (solo UI) ----------
-  var LC_CAT_LABELS = {
-    heroes:'Héroes', personal:'Personal', ranged:'Armas a distancia', melee:'Armas cuerpo a cuerpo',
-    traps:'Trampas', packs:'Packs de inicio', event_people:'Personajes de evento',
-    event_schematics:'Esquemas de evento', expansion_people:'Personajes de expansión',
-    expansion_schematics:'Esquemas de expansión'
-  };
-  // Las subcategorías se muestran en su nombre original (inglés) tal como
-  // exige la comunidad para identificar el objeto en el meta del juego.
-  var LC_SUB_LABELS = {
-    soldiers:'Soldiers', constructors:'Constructors', ninjas:'Ninjas', outlanders:'Outlanders',
-    survivors:'Survivors', lead_survivors:'Lead Survivors', defenders:'Defenders',
-    assault_rifles:'Assault Rifles', shotguns:'Shotguns', pistols_smgs:'Pistols & SMGs',
-    sniper_rifles:'Sniper Rifles', explosive_weapons:'Explosive Weapons',
-    swords:'Swords', axes:'Axes', spears:'Spears', scythes:'Scythes', clubs_hardware:'Clubs & Hardware',
-    wall_traps:'Wall Traps', floor_traps:'Floor Traps', ceiling_traps:'Ceiling Traps'
-  };
-
-  // ---------- Base de datos inicial (nombres de objetos en inglés) ----------
-  // Estructura: LC_DATA[categoría].subcats[subcategoría] = [ {name, rarity, role} ... ]
-  // Las categorías sin subcarpetas oficiales usan LC_DATA[categoría].items = [ ... ]
-  var LC_DATA = {
-    heroes: {
-      subcats: {
-        soldiers: [
-          { name:'Urban Assault Headhunter', rarity:'legendario', role:'Soldier' },
-          { name:'Master Grenadier Ramirez', rarity:'legendario', role:'Soldier' },
-          { name:'Survivalist Jonesy',       rarity:'poco-comun', role:'Soldier' },
-          { name:'Special Forces Banshee',   rarity:'epico',      role:'Soldier' }
-        ],
-        constructors: [
-          { name:'Mega Base Kyle',   rarity:'legendario', role:'Constructor' },
-          { name:'Power BASE Knox',  rarity:'epico',       role:'Constructor' },
-          { name:'BASE Kyle',        rarity:'comun',       role:'Constructor' },
-          { name:'Heavy BASE Kyle',  rarity:'raro',         role:'Constructor' },
-          { name:'Machinist Harper', rarity:'legendario', role:'Constructor' }
-        ],
-        ninjas: [
-          { name:'Dragon Scorch',           rarity:'mitico',      role:'Ninja' },
-          { name:'Dim Mak Mari',            rarity:'legendario', role:'Ninja' },
-          { name:'Shuriken Master Llamurai',rarity:'legendario', role:'Ninja' },
-          { name:'Sarah Hotep',             rarity:'epico',      role:'Ninja' }
-        ],
-        outlanders: [
-          { name:'Ranger Deadeye',   rarity:'legendario', role:'Outlander' },
-          { name:'Striker A.C.',     rarity:'epico',      role:'Outlander' },
-          { name:'Enforcer Grizzly', rarity:'legendario', role:'Outlander' },
-          { name:'Trailblazer Quinn',rarity:'epico',      role:'Outlander' }
-        ]
-      }
-    },
-
-    personal: {
-      subcats: {
-        survivors: [],
-        lead_survivors: [],
-        defenders: []
-      }
-    },
-
-    ranged: {
-      subcats: {
-        assault_rifles: [
-          { name:'Siegebreaker', rarity:'legendario', role:'Assault Rifle' },
-          { name:'Thunderbolt',  rarity:'epico',      role:'Assault Rifle' }
-        ],
-        shotguns: [
-          { name:'Super Shredder', rarity:'legendario', role:'Shotgun' }
-        ],
-        pistols_smgs: [
-          { name:'Nocturno', rarity:'epico', role:'SMG' }
-        ],
-        sniper_rifles: [
-          { name:"Ol' Betsy", rarity:'legendario', role:'Sniper Rifle' }
-        ],
-        explosive_weapons: [
-          { name:'Hunter-Killer', rarity:'mitico', role:'Explosive Weapon' }
-        ]
-      }
-    },
-
-    melee: {
-      subcats: {
-        swords: [
-          { name:'Spectral Blade', rarity:'mitico',      role:'Sword' },
-          { name:'Stormblade',     rarity:'legendario', role:'Sword' }
-        ],
-        axes: [
-          { name:'Huskcleaver', rarity:'legendario', role:'Axe' }
-        ],
-        spears: [],
-        scythes: [],
-        clubs_hardware: [
-          { name:'Walloper', rarity:'epico', role:'Club' }
-        ]
-      }
-    },
-
-    traps: {
-      subcats: {
-        wall_traps: [
-          { name:'Broadside',      rarity:'legendario', role:'Wall Trap' },
-          { name:'Wall Dart',      rarity:'comun',       role:'Wall Trap' },
-          { name:'Wall Dynamo',    rarity:'epico',       role:'Wall Trap' },
-          { name:'Wall Launcher',  rarity:'comun',       role:'Wall Trap' },
-          { name:'Sound Wall',     rarity:'raro',        role:'Wall Trap' }
-        ],
-        floor_traps: [
-          { name:'Wooden Floor Spikes', rarity:'comun',       role:'Floor Trap' },
-          { name:'Tar Pit',             rarity:'raro',        role:'Floor Trap' },
-          { name:'Flame Grill Trap',    rarity:'epico',       role:'Floor Trap' },
-          { name:'Floor Freezer',       rarity:'legendario', role:'Floor Trap' }
-        ],
-        ceiling_traps: [
-          { name:'Ceiling Gas Trap',      rarity:'raro',        role:'Ceiling Trap' },
-          { name:'Ceiling Electric Field',rarity:'epico',       role:'Ceiling Trap' },
-          { name:'Ceiling Drop Trap',     rarity:'legendario', role:'Ceiling Trap' }
-        ]
-      }
-    },
-
-    packs:                { items: [] },
-    event_people:         { items: [] },
-    event_schematics:     { items: [] },
-    expansion_people:     { items: [] },
-    expansion_schematics: { items: [] }
-  };
-
-  // ---------- Índice plano para el buscador global ----------
-  // Cada entrada conserva su categoría/subcategoría de origen para poder
-  // navegar hasta ella y armar la migaja de pan en los resultados.
-  var LC_FLAT_INDEX = [];
-  (function buildFlatIndex(){
-    Object.keys(LC_DATA).forEach(function(catKey){
-      var cat = LC_DATA[catKey];
-      if(cat.subcats){
-        Object.keys(cat.subcats).forEach(function(subKey){
-          cat.subcats[subKey].forEach(function(it){
-            LC_FLAT_INDEX.push({
-              name: it.name, rarity: it.rarity, role: it.role,
-              catKey: catKey, subKey: subKey
-            });
-          });
-        });
-      } else if(cat.items){
-        cat.items.forEach(function(it){
-          LC_FLAT_INDEX.push({
-            name: it.name, rarity: it.rarity, role: it.role,
-            catKey: catKey, subKey: null
-          });
-        });
-      }
-    });
-  })();
-
-  // ---------- Referencias DOM ----------
-  var lcMenu            = document.getElementById('lcMenu');
-  var lcPanel           = document.getElementById('lcPanel');
-  var lcSearchInputBook = document.getElementById('lcSearchInput');
-  var lcSearchClear     = document.getElementById('lcSearchClear');
-  var lcFilterBar       = document.getElementById('lcFilterBar');
-  var lcMenuGroups      = document.querySelectorAll('.lc-menu-group');
-  var lcCatButtons      = document.querySelectorAll('.lc-menu-item[data-cat]');
-  var lcSubButtons      = document.querySelectorAll('.lc-submenu-item');
-  var lcFilterButtons   = document.querySelectorAll('.lc-filter-btn');
-
-  // ---------- Estado de la vista actual ----------
-  var lcState = {
-    mode: 'empty',       // 'empty' | 'category' | 'search'
-    catKey: null,
-    subKey: null,
-    query: '',
-    rarityFilter: 'all'  // 'all' | 'legendary-mythic' | 'epico' | 'raro'
-  };
-
-  function rarityMatchesFilter(rarity, filter){
-    if(filter === 'all') return true;
-    if(filter === 'legendary-mythic') return rarity === 'legendario' || rarity === 'mitico';
-    return rarity === filter;
-  }
-
-  function getItemsForCurrentSelection(){
-    if(lcState.mode === 'search'){
-      var q = lcState.query;
-      return LC_FLAT_INDEX.filter(function(it){
-        return it.name.toLowerCase().indexOf(q) !== -1;
-      });
-    }
-    if(lcState.mode === 'category'){
-      var cat = LC_DATA[lcState.catKey];
-      if(!cat) return [];
-      var list;
-      if(lcState.subKey && cat.subcats){
-        list = cat.subcats[lcState.subKey] || [];
-      } else if(cat.items){
-        list = cat.items;
-      } else {
-        list = [];
-      }
-      return list.map(function(it){
-        return { name: it.name, rarity: it.rarity, role: it.role, catKey: lcState.catKey, subKey: lcState.subKey };
-      });
-    }
-    return [];
-  }
-
-  function cardMarkup(it){
-    var enRarity = RARITY_EN[it.rarity] || '';
-    return '' +
-      '<div class="lc-card rarity-' + it.rarity + '">' +
-        '<div class="card-image-holder">' +
-          '<img class="card-img" src="" alt="' + it.name + '" loading="lazy">' +
-          '<span class="card-image-fallback" aria-hidden="true">' +
-            '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' +
-              '<rect x="3" y="3" width="18" height="18" rx="2.5"/><circle cx="9" cy="9" r="1.8"/><path d="M21 15l-5.2-5.2a2 2 0 0 0-2.8 0L3 19"/>' +
-            '</svg>' +
-          '</span>' +
-        '</div>' +
-        '<h4 class="lc-card-name">' + it.name + '</h4>' +
-        '<p class="lc-card-role">' + enRarity + ' ' + it.role + '</p>' +
-        '<span class="lc-rarity-tag">' + RARITY_ES[it.rarity] + '</span>' +
-      '</div>';
-  }
-
-  function renderPanel(){
-    var baseItems = getItemsForCurrentSelection();
-    var filtered = baseItems.filter(function(it){ return rarityMatchesFilter(it.rarity, lcState.rarityFilter); });
-
-    if(lcState.mode === 'empty'){
-      lcPanel.innerHTML =
-        '<div class="lc-empty" id="lcEmptyState">' +
-          '<div class="lc-empty-icon">📚</div>' +
-          '<p>Selecciona una categoría del Libro de colección para explorar sus esquemas y personajes.</p>' +
-        '</div>';
-      return;
-    }
-
-    // Título / migaja de pan
-    var titleHtml;
-    if(lcState.mode === 'search'){
-      titleHtml = '<h3>Resultados para «' + (lcSearchInputBook ? lcSearchInputBook.value.trim() : '') + '»</h3>';
-    } else {
-      var catLabel = LC_CAT_LABELS[lcState.catKey] || '';
-      var subLabel = lcState.subKey ? (LC_SUB_LABELS[lcState.subKey] || '') : '';
-      titleHtml = '<h3>' + catLabel + (subLabel ? ' <span class="lc-breadcrumb-sub">/ ' + subLabel + '</span>' : '') + '</h3>';
-    }
-
-    var countLabel = filtered.length + (filtered.length === 1 ? ' elemento' : ' elementos');
-    var html = '<div class="lc-panel-title">' + titleHtml + '<span class="lc-result-count">' + countLabel + '</span></div>';
-
-    if(filtered.length === 0){
-      if(baseItems.length === 0 && lcState.mode === 'category'){
-        var label = lcState.subKey ? (LC_SUB_LABELS[lcState.subKey] || '') : (LC_CAT_LABELS[lcState.catKey] || '');
-        html +=
-          '<div class="lc-soon">' +
-            '<div class="lc-empty-icon">🗂️</div>' +
-            '<p><strong>' + label + '</strong><br>Esta subcategoría se completará próximamente con la base de datos completa de objetos.</p>' +
-          '</div>';
-      } else {
-        html += '<div class="lc-no-results">No se encontraron elementos con los filtros actuales.</div>';
-      }
-      lcPanel.innerHTML = html;
-      return;
-    }
-
-    html += '<div class="lc-item-grid">';
-    filtered.forEach(function(it){ html += cardMarkup(it); });
-    html += '</div>';
-
-    if(lcState.mode === 'category'){
-      html += '<p class="lc-demo-note">Estructura lista para recibir imágenes reales de cada objeto.</p>';
-    }
-
-    lcPanel.innerHTML = html;
-  }
-
-  // ---------- Acordeón de categorías con subcarpetas ----------
-  lcMenuGroups.forEach(function(group){
-    var header = group.querySelector('.lc-menu-item[data-cat]');
-    if(!header) return;
-    header.addEventListener('click', function(){
-      var willOpen = !group.classList.contains('open');
-
-      // Cierra los demás grupos (solo un acordeón abierto a la vez)
-      lcMenuGroups.forEach(function(g){
-        if(g !== group){
-          g.classList.remove('open');
-          var otherHeader = g.querySelector('.lc-menu-item[data-cat]');
-          if(otherHeader) otherHeader.setAttribute('aria-expanded', 'false');
-          var otherSubmenu = g.querySelector('.lc-submenu');
-          if(otherSubmenu) otherSubmenu.style.maxHeight = null;
-        }
-      });
-
-      group.classList.toggle('open', willOpen);
-      header.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-      var submenu = group.querySelector('.lc-submenu');
-      if(submenu){ submenu.style.maxHeight = willOpen ? submenu.scrollHeight + 'px' : null; }
-
-      // Un clic en la categoría solo despliega sus subcarpetas;
-      // no selecciona contenido por sí mismo si tiene subcategorías.
-    });
-  });
-
-  // ---------- Selección de subcategoría ----------
-  lcSubButtons.forEach(function(sub){
-    sub.addEventListener('click', function(e){
-      e.stopPropagation();
-      lcSubButtons.forEach(function(s){ s.classList.remove('active'); });
-      lcCatButtons.forEach(function(c){ c.classList.remove('active'); });
-      sub.classList.add('active');
-
-      if(lcSearchInputBook){ lcSearchInputBook.value = ''; }
-      lcSearchClear.hidden = true;
-
-      lcState.mode = 'category';
-      lcState.catKey = sub.getAttribute('data-cat');
-      lcState.subKey = sub.getAttribute('data-sub');
-      lcState.query = '';
-      renderPanel();
-    });
-  });
-
-  // ---------- Categorías planas (sin subcarpetas: Packs, Eventos, Expansión) ----------
-  lcCatButtons.forEach(function(btn){
-    if(!btn.classList.contains('lc-menu-flat')) return;
-    btn.addEventListener('click', function(){
-      lcSubButtons.forEach(function(s){ s.classList.remove('active'); });
-      lcCatButtons.forEach(function(c){ c.classList.remove('active'); });
-      lcMenuGroups.forEach(function(g){
-        g.classList.remove('open');
-        var h = g.querySelector('.lc-menu-item[data-cat]');
-        if(h) h.setAttribute('aria-expanded', 'false');
-        var sm = g.querySelector('.lc-submenu');
-        if(sm) sm.style.maxHeight = null;
-      });
-      btn.classList.add('active');
-
-      if(lcSearchInputBook){ lcSearchInputBook.value = ''; }
-      lcSearchClear.hidden = true;
-
-      lcState.mode = 'category';
-      lcState.catKey = btn.getAttribute('data-cat');
-      lcState.subKey = null;
-      lcState.query = '';
-      renderPanel();
-    });
-  });
-
-  // ---------- Filtros de rareza ----------
-  lcFilterButtons.forEach(function(btn){
-    btn.addEventListener('click', function(){
-      lcFilterButtons.forEach(function(b){ b.classList.remove('active'); });
-      btn.classList.add('active');
-      lcState.rarityFilter = btn.getAttribute('data-rarity-filter');
-      renderPanel();
-    });
-  });
-
-  // ---------- Buscador global en tiempo real ----------
-  if(lcSearchInputBook){
-    lcSearchInputBook.addEventListener('input', function(){
-      var raw = lcSearchInputBook.value.trim();
-      lcSearchClear.hidden = raw === '';
-
-      if(raw === ''){
-        // Vuelve al estado vacío y limpia cualquier selección activa
-        lcCatButtons.forEach(function(c){ c.classList.remove('active'); });
-        lcSubButtons.forEach(function(s){ s.classList.remove('active'); });
-        lcState.mode = 'empty';
-        lcState.catKey = null;
-        lcState.subKey = null;
-        lcState.query = '';
-        renderPanel();
-        return;
-      }
-
-      lcCatButtons.forEach(function(c){ c.classList.remove('active'); });
-      lcSubButtons.forEach(function(s){ s.classList.remove('active'); });
-
-      lcState.mode = 'search';
-      lcState.query = raw.toLowerCase();
-      renderPanel();
-    });
-  }
-
-  if(lcSearchClear){
-    lcSearchClear.addEventListener('click', function(){
-      lcSearchInputBook.value = '';
-      lcSearchInputBook.dispatchEvent(new Event('input'));
-      lcSearchInputBook.focus();
-    });
-  }
-
-})();
-</script>
+<script type="module" src="js/main.js"></script>
 
 </body>
 </html>
