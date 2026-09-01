@@ -11,7 +11,8 @@
 // ============================================================================
 
 import { observeReveals } from './ui.js';
-import { updateCounters } from './render.js';
+import { updateCounters, updateLevelPanel } from './render.js';
+import { loadState, loadResources } from './state.js';
 
 // Asegura que './traps-simulator.js', './contact-widget.js' y
 // './collection-events.js' se carguen y ejecuten como parte del grafo de
@@ -20,5 +21,11 @@ import './traps-simulator.js';
 import './contact-widget.js';
 import './collection-events.js';
 
+// Restaura el progreso del Libro de colección (registrados/favoritos) y los
+// recursos del jugador guardados en localStorage antes de pintar cualquier UI.
+loadState();
+loadResources();
+
 observeReveals();
 updateCounters();
+updateLevelPanel();
