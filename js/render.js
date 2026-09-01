@@ -1,48 +1,34 @@
 // ============================================================================
-// render.js — Renderizado del panel, tarjetas, contadores [N] y modal de
-// ficha técnica del Libro de colección.
-// Migrado sin cambios funcionales desde el <script> original.
+// render.js — Renderizado del panel, tarjetas, barra de nivel, contadores [N]
+// y modal de ficha técnica (con pestañas: Ficha / Perks / Calculadora) del
+// Libro de colección.
 // ============================================================================
 
 import {
-  RARITY_EN, RARITY_ES, LC_CAT_LABELS, LC_SUB_LABELS, LC_ROLE_ES,
-  LC_DATA, LC_FLAT_INDEX, RARITY_TIER, HERO_ROLES, lcState, lcModalState
+  RARITY_EN, RARITY_ES, ELEMENT_ES, ELEMENT_ICON, LC_CAT_LABELS, LC_SUB_LABELS, LC_ROLE_ES,
+  LC_DATA, LC_FLAT_INDEX, HERO_ROLES, lcState, lcModalState,
+  lcPlayerResources, toggleRegisterStatus, toggleFavorite, saveResources
 } from './state.js';
 import {
-  rarityMatchesFilter, statusMatchesFilter, textMatchesQuery,
+  rarityMatchesFilter, statusMatchesFilter, elementMatchesFilter, textMatchesQuery,
   getItemsForCurrentSelection
 } from './filters.js';
 import {
   lcPanel, lcSearchInputBook, lcCatButtons, lcSubButtons,
-  lcModalOverlay, lcModalClose, lcModalBand, lcModalRarityTag, lcModalMedia,
-  lcModalName, lcModalRole, lcModalStats, lcModalPrev, lcModalNext
+  lcLevelFill, lcLevelLabel, lcLevelPercent,
+  lcModalOverlay, lcModalClose, lcModalFav, lcModalBand, lcModalRarityTag, lcModalMedia,
+  lcModalName, lcModalRole, lcModalTabs, lcModalStats, lcModalPerks, lcModalCalc,
+  lcModalPrev, lcModalNext
 } from './dom.js';
 
-// ---------- Generador de ficha ilustrativa (Daño/Impacto/Durabilidad/Recarga o Perk) ----------
-// No existen datos reales de perks/estadísticas por objeto todavía, así que se
-// deriva un set ilustrativo y estable (mismo objeto = mismos valores) a partir
-// de su rareza, para dejar la interfaz del modal 100% lista sin inventar cifras
-// oficiales de un objeto real.
-function lcStatsHtml(it){
-  var tier = RARITY_TIER[it.rarity] || 1;
-  if(HERO_ROLES[it.role]){
-    return '<h4>Ventaja de Héroe</h4>' +
-      '<p class="lc-modal-perk-text">Ficha de ' + LC_ROLE_ES[it.role] + ' de rareza ' + RARITY_ES[it.rarity] +
-      '. Su ventaja principal (Hero Perk) y el detalle de su set de equipo se completarán cuando se integre la base de datos real de perks.</p>';
-  }
-  var isTrap = /Trap$/.test(it.role);
-  var damage = tier * (isTrap ? 12 : 12);
-  var impact = Math.round(tier * 8.5);
-  var durability = isTrap ? tier * 90 : null;
-  var reload = (isTrap ? (3.2 - tier * 0.35) : (1.6 - tier * 0.15)).toFixed(2);
-  var rows =
-    '<div class="lc-modal-stat-row"><span>Daño</span><span>' + damage + '</span></div>' +
-    '<div class="lc-modal-stat-row"><span>Impacto</span><span>' + impact + '</span></div>';
-  if(durability){
-    rows += '<div class="lc-modal-stat-row"><span>Durabilidad</span><span>' + durability + '</span></div>';
-  }
-  rows += '<div class="lc-modal-stat-row"><span>Tiempo de recarga</span><span>' + reload + 's</span></div>';
-  return '<h4>Estadísticas base</h4>' + rows;
+// ---------- Barra de nivel del Libro de colección (XP global) ----------
+export function updateLevelPanel(){
+  var total = LC_FLAT_INDEX.length;
+  var done = LC_FLAT_INDEX.filter(function(it){ return it.registered; }).length;
+  var pct = total ? Math.round((done / total) * 100) : 0;
+  if(lcLevelFill) lcLevelFill.style.width = pct + '%';
+  if(lcLevelPercent) lcLevelPercent.textContent = pct + '%';
+  if(lcLevelLabel) lcLevelLabel.textContent = done + ' / ' + total + ' objetos registrados';
 }
 
 // ---------- Conteo dinámico para los badges [N] ----------
@@ -52,6 +38,7 @@ function lcCountFor(catKey, subKey){
     if(subKey != null && it.subKey !== subKey) return false;
     if(!rarityMatchesFilter(it.rarity, lcState.rarityFilter)) return false;
     if(!statusMatchesFilter(it.registered, lcState.statusFilter)) return false;
+    if(!elementMatchesFilter(it.element, lcState.elementFilter)) return false;
     if(lcState.query && !textMatchesQuery(it, lcState.query)) return false;
     return true;
   }).length;
@@ -93,9 +80,11 @@ function mediaSlotMarkup(){
 function cardMarkup(it){
   var enRarity = RARITY_EN[it.rarity] || '';
   var pendingClass = it.registered ? '' : ' is-pending';
+  var elIcon = ELEMENT_ICON[it.element] || '';
   return '' +
     '<div class="lc-card rarity-' + it.rarity + pendingClass + '" data-item-id="' + it.id + '" tabindex="0" role="button" aria-label="Ver ficha de ' + it.name + '">' +
-      '<span class="lc-card-status">' + (it.registered ? '✅' : '🔒') + '</span>' +
+      '<button type="button" class="lc-card-register-btn" data-item-id="' + it.id + '" title="' + (it.registered ? 'Marcar como pendiente' : 'Marcar como registrado') + '" aria-label="' + (it.registered ? 'Marcar como pendiente' : 'Marcar como registrado') + '">' + (it.registered ? '✅' : '🔒') + '</button>' +
+      (elIcon !== ELEMENT_ICON['ninguno'] ? '<span class="lc-card-element" title="' + ELEMENT_ES[it.element] + '">' + elIcon + '</span>' : '') +
       mediaSlotMarkup() +
       '<h4 class="lc-card-name">' + it.name + '</h4>' +
       '<p class="lc-card-role">' + enRarity + ' ' + it.role + '</p>' +
@@ -105,9 +94,12 @@ function cardMarkup(it){
 
 export function renderPanel(){
   updateCounters();
+  updateLevelPanel();
   var baseItems = getItemsForCurrentSelection();
   var filtered = baseItems.filter(function(it){
-    return rarityMatchesFilter(it.rarity, lcState.rarityFilter) && statusMatchesFilter(it.registered, lcState.statusFilter);
+    return rarityMatchesFilter(it.rarity, lcState.rarityFilter) &&
+           statusMatchesFilter(it.registered, lcState.statusFilter) &&
+           elementMatchesFilter(it.element, lcState.elementFilter);
   });
 
   if(lcState.mode === 'empty'){
@@ -151,7 +143,7 @@ export function renderPanel(){
   html += '</div>';
 
   if(lcState.mode === 'category'){
-    html += '<p class="lc-demo-note">Estructura lista para recibir imágenes reales de cada objeto.</p>';
+    html += '<p class="lc-demo-note">Toca el candado de una tarjeta para marcarla como registrada, o ábrela para ver su ficha completa.</p>';
   }
 
   lcPanel.innerHTML = html;
@@ -165,13 +157,101 @@ export function renderPanel(){
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openModalById(cardEl.getAttribute('data-item-id')); }
     });
   });
+
+  lcPanel.querySelectorAll('.lc-card-register-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var it = toggleRegisterStatus(btn.getAttribute('data-item-id'));
+      if(!it) return;
+      renderPanel();
+      if(lcModalOverlay.classList.contains('open') && lcModalState.list[lcModalState.index] && lcModalState.list[lcModalState.index].id === it.id){
+        renderModal(it);
+      }
+    });
+  });
+}
+
+// ---------- Ficha técnica: estadísticas reales según tipo de objeto ----------
+function statRow(label, value){
+  if(value === undefined || value === null || value === '') return '';
+  return '<div class="lc-modal-stat-row"><span>' + label + '</span><span>' + value + '</span></div>';
+}
+
+function lcStatsHtml(it){
+  var s = it.stats || {};
+  var rows = '';
+  if(HERO_ROLES[it.role]){
+    rows += statRow('Salud base', s.salud);
+    rows += statRow('Escudo base', s.escudo);
+    rows += statRow('Modificador de daño de habilidad', s.danoHabilidad ? ('x' + s.danoHabilidad) : null);
+  } else if(it.role === 'Survivor'){
+    rows += statRow('Bono de salud', s.bonoSalud);
+    rows += statRow('Bono de fabricación', s.bonoFabricacion);
+  } else {
+    rows += statRow('Daño', s.dano);
+    rows += statRow('Impacto', s.impacto);
+    rows += statRow('Durabilidad', s.durabilidad);
+    rows += statRow('Tamaño de cargador', s.tamanoCargador);
+    rows += statRow('Cadencia de tiro (disparos/seg)', s.cadencia);
+    rows += statRow('Tiempo de recarga', s.recarga ? (s.recarga + 's') : null);
+    rows += statRow('Alcance', s.alcance);
+  }
+  if(!rows) rows = '<p class="lc-modal-perk-text">Esta ficha aún no tiene estadísticas de combate registradas.</p>';
+  return '<h4>Estadísticas base</h4>' + rows +
+    '<p class="lc-modal-illustrative">Valores de referencia a nivel/esquema base — escalan con el nivel del objeto y del jugador.</p>';
+}
+
+// ---------- Perks & God Rolls ----------
+function lcPerksHtml(it){
+  var p = it.perks || {};
+  if(HERO_ROLES[it.role] || it.role === 'Survivor'){
+    var html = '<h4>Ventajas de Héroe</h4>';
+    if(p.estandar) html += '<div class="lc-perk-block"><span class="lc-perk-tag">Estándar</span><p class="lc-modal-perk-text">' + p.estandar + '</p></div>';
+    if(p.comandante) html += '<div class="lc-perk-block"><span class="lc-perk-tag lc-perk-tag-cmd">Comandante</span><p class="lc-modal-perk-text">' + p.comandante + '</p></div>';
+    if(!p.estandar && !p.comandante) html += '<p class="lc-modal-perk-text">Perks pendientes de documentar.</p>';
+    return html;
+  }
+  var combo = p.combinacionIdeal ? p.combinacionIdeal.split('/').map(function(s){ return s.trim(); }) : [];
+  var html2 = '<h4>Combinación ideal / God Roll</h4>';
+  if(combo.length){
+    html2 += '<ol class="lc-perk-slots">' + combo.map(function(perk){ return '<li>' + perk + '</li>'; }).join('') + '</ol>';
+  } else {
+    html2 += '<p class="lc-modal-perk-text">Combinación ideal pendiente de documentar.</p>';
+  }
+  return html2;
+}
+
+// ---------- Calculadora de reclutamiento ----------
+function calcRow(resourceKey, label, needed){
+  var have = lcPlayerResources[resourceKey] || 0;
+  var missing = Math.max(0, needed - have);
+  var ok = have >= needed;
+  return '' +
+    '<div class="lc-calc-row ' + (ok ? 'is-ok' : 'is-missing') + '">' +
+      '<div class="lc-calc-row-top"><span>' + label + '</span><span class="lc-calc-needed">' + needed + ' necesarios</span></div>' +
+      '<div class="lc-calc-row-bottom">' +
+        '<label>Tienes: <input type="number" min="0" class="lc-calc-input" data-resource="' + resourceKey + '" value="' + have + '"></label>' +
+        '<span class="lc-calc-status">' + (ok ? '✅ Completo' : '⚠️ Faltan ' + missing) + '</span>' +
+      '</div>' +
+    '</div>';
+}
+
+function lcCalcHtml(it){
+  var c = it.cost || { flux:0, manuales:0, gotasPurificadas:0 };
+  var rows = calcRow('flux', 'Flux', c.flux) + calcRow('manuales', 'Manuales de Entrenamiento/Diseño', c.manuales) + calcRow('gotasPurificadas', 'Gotas Purificadas', c.gotasPurificadas);
+  var canAfford = (lcPlayerResources.flux || 0) >= c.flux && (lcPlayerResources.manuales || 0) >= c.manuales && (lcPlayerResources.gotasPurificadas || 0) >= c.gotasPurificadas;
+  return '<h4>Costo de reclutamiento</h4>' + rows +
+    '<p class="lc-calc-result ' + (canAfford ? 'can-afford' : 'cant-afford') + '">' +
+      (canAfford ? '✅ Tienes lo necesario para sacar este objeto del Libro de colección.' : '⚠️ Aún te faltan recursos para reclutar este objeto.') +
+    '</p>' +
+    '<p class="lc-modal-illustrative">Edita tus recursos actuales arriba — se guardan automáticamente para el resto del Libro de colección.</p>';
 }
 
 // ---------- Modal de ficha técnica ----------
 export function renderModal(it){
   lcModalBand.className = 'lc-modal-band rarity-' + it.rarity;
   lcModalRarityTag.className = 'lc-rarity-tag rarity-' + it.rarity;
-  lcModalRarityTag.textContent = RARITY_ES[it.rarity];
+  lcModalRarityTag.textContent = RARITY_ES[it.rarity] + (it.element !== 'ninguno' ? ' · ' + ELEMENT_ICON[it.element] + ' ' + ELEMENT_ES[it.element] : '');
   lcModalMedia.innerHTML =
     '<span class="media-slot-fallback" aria-hidden="true">' +
       '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' +
@@ -180,17 +260,39 @@ export function renderModal(it){
     '</span>';
   lcModalMedia.setAttribute('data-item-id', it.id);
   lcModalName.textContent = it.name;
-  lcModalRole.textContent = LC_ROLE_ES[it.role] ? (LC_ROLE_ES[it.role] + ' ' + RARITY_ES[it.rarity]) : (RARITY_ES[it.rarity] + ' ' + it.role);
+  lcModalRole.textContent = (LC_ROLE_ES[it.role] || it.role) + ' · ' + (it.lore || '');
+
+  if(lcModalFav){
+    lcModalFav.textContent = it.isFavorite ? '⭐' : '☆';
+    lcModalFav.setAttribute('data-item-id', it.id);
+    lcModalFav.setAttribute('aria-pressed', it.isFavorite ? 'true' : 'false');
+  }
+
   lcModalStats.innerHTML = lcStatsHtml(it);
+  lcModalPerks.innerHTML = lcPerksHtml(it);
+  lcModalCalc.innerHTML = lcCalcHtml(it);
+
+  applyModalTab(lcModalState.activeTab);
 
   lcModalPrev.disabled = lcModalState.index <= 0;
   lcModalNext.disabled = lcModalState.index >= lcModalState.list.length - 1;
+}
+
+export function applyModalTab(tabKey){
+  lcModalState.activeTab = tabKey;
+  lcModalTabs.forEach(function(tabBtn){
+    tabBtn.classList.toggle('active', tabBtn.getAttribute('data-tab') === tabKey);
+  });
+  [ ['ficha', lcModalStats], ['perks', lcModalPerks], ['calculadora', lcModalCalc] ].forEach(function(pair){
+    pair[1].classList.toggle('active', pair[0] === tabKey);
+  });
 }
 
 export function openModalById(id){
   var idx = lcModalState.list.findIndex(function(it){ return it.id === id; });
   if(idx === -1) return;
   lcModalState.index = idx;
+  lcModalState.activeTab = 'ficha';
   renderModal(lcModalState.list[idx]);
   lcModalOverlay.classList.add('open');
   lcModalClose.focus();
@@ -199,3 +301,6 @@ export function openModalById(id){
 export function closeModal(){
   lcModalOverlay.classList.remove('open');
 }
+
+export { toggleFavorite, saveResources };
+  
