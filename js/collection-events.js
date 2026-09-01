@@ -4,13 +4,13 @@
 // Migrado sin cambios funcionales desde el segundo <script> original.
 // ============================================================================
 
-import { lcState, lcModalState } from './state.js';
-import { renderPanel, renderModal, closeModal } from './render.js';
+import { lcState, lcModalState, toggleFavorite, saveResources, lcPlayerResources } from './state.js';
+import { renderPanel, renderModal, closeModal, applyModalTab } from './render.js';
 import {
   subnavToggle, subnavStripWrap, subnavBtns, moContent, devCard, devCardTitle, lcWrap,
-  lcSearchInputBook, lcSearchClear, lcFilterButtons, lcStatusButtons,
+  lcSearchInputBook, lcSearchClear, lcFilterButtons, lcStatusButtons, lcElementButtons,
   lcMenuGroups, lcCatButtons, lcSubButtons,
-  lcModalOverlay, lcModalClose, lcModalPrev, lcModalNext
+  lcModalOverlay, lcModalClose, lcModalFav, lcModalTabs, lcModalCalc, lcModalPrev, lcModalNext
 } from './dom.js';
 
 (function(){
@@ -101,12 +101,47 @@ import {
   });
   if(lcModalPrev){
     lcModalPrev.addEventListener('click', function(){
-      if(lcModalState.index > 0){ lcModalState.index--; renderModal(lcModalState.list[lcModalState.index]); }
+      if(lcModalState.index > 0){ lcModalState.index--; lcModalState.activeTab = 'ficha'; renderModal(lcModalState.list[lcModalState.index]); }
     });
   }
   if(lcModalNext){
     lcModalNext.addEventListener('click', function(){
-      if(lcModalState.index < lcModalState.list.length - 1){ lcModalState.index++; renderModal(lcModalState.list[lcModalState.index]); }
+      if(lcModalState.index < lcModalState.list.length - 1){ lcModalState.index++; lcModalState.activeTab = 'ficha'; renderModal(lcModalState.list[lcModalState.index]); }
+    });
+  }
+
+  // ---------- Favorito (⭐) desde el modal ----------
+  if(lcModalFav){
+    lcModalFav.addEventListener('click', function(){
+      var it = toggleFavorite(lcModalFav.getAttribute('data-item-id'));
+      if(it) renderModal(it);
+    });
+  }
+
+  // ---------- Pestañas del modal: Ficha técnica / Perks / Calculadora ----------
+  lcModalTabs.forEach(function(tabBtn){
+    tabBtn.addEventListener('click', function(){
+      applyModalTab(tabBtn.getAttribute('data-tab'));
+    });
+  });
+
+  // ---------- Calculadora de reclutamiento: inputs de recursos del jugador ----------
+  if(lcModalCalc){
+    lcModalCalc.addEventListener('input', function(e){
+      var input = e.target.closest('.lc-calc-input');
+      if(!input) return;
+      var resourceKey = input.getAttribute('data-resource');
+      var next = {
+        flux: lcPlayerResources.flux, manuales: lcPlayerResources.manuales,
+        gotasPurificadas: lcPlayerResources.gotasPurificadas
+      };
+      next[resourceKey] = input.value;
+      saveResources(next);
+      var current = lcModalState.list[lcModalState.index];
+      if(current) renderModal(current);
+      // Devuelve el foco al input que se estaba editando tras el re-render
+      var refreshed = lcModalCalc.querySelector('.lc-calc-input[data-resource="' + resourceKey + '"]');
+      if(refreshed){ refreshed.focus(); refreshed.selectionStart = refreshed.selectionEnd = refreshed.value.length; }
     });
   }
 
@@ -199,6 +234,16 @@ import {
     });
   });
 
+  // ---------- Filtro por elemento ----------
+  lcElementButtons.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      lcElementButtons.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      lcState.elementFilter = btn.getAttribute('data-element-filter');
+      renderPanel();
+    });
+  });
+
   // ---------- Buscador global en tiempo real (nombre, rol y subcategoría) ----------
   if(lcSearchInputBook){
     lcSearchInputBook.addEventListener('input', function(){
@@ -234,3 +279,4 @@ import {
   }
 
 })();
+        
