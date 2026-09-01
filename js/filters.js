@@ -17,6 +17,11 @@ export function statusMatchesFilter(registered, filter){
   return registered === false;
 }
 
+export function elementMatchesFilter(element, filter){
+  if(filter === 'all') return true;
+  return element === filter;
+}
+
 export function textMatchesQuery(it, q){
   if(!q) return true;
   var haystack = [
@@ -45,6 +50,8 @@ export function getItemsForCurrentSelection(){
 
 export function getFilteredItems(){
   return getItemsForCurrentSelection().filter(function(it){
-    return rarityMatchesFilter(it.rarity, lcState.rarityFilter) && statusMatchesFilter(it.registered, lcState.statusFilter);
+    return rarityMatchesFilter(it.rarity, lcState.rarityFilter) &&
+           statusMatchesFilter(it.registered, lcState.statusFilter) &&
+           elementMatchesFilter(it.element, lcState.elementFilter);
   });
 }
