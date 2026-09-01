@@ -83,6 +83,15 @@
       <p>Explora héroes, supervivientes, armas, trampas y esquemas del juego. Los nombres propios de cada objeto se muestran en su idioma original, tal como aparecen en el juego.</p>
     </div>
 
+    <div class="lc-level-panel" id="lcLevelPanel">
+      <div class="lc-level-top">
+        <span class="lc-level-title">📖 Nivel del Libro de colección</span>
+        <span class="lc-level-percent" id="lcLevelPercent">0%</span>
+      </div>
+      <div class="lc-xp-bar"><div class="lc-xp-fill" id="lcLevelFill" style="width:0%"></div></div>
+      <span class="lc-level-label" id="lcLevelLabel">0 / 0 objetos registrados</span>
+    </div>
+
     <div class="lc-search">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input type="text" id="lcSearchInput" placeholder="Buscar esquema, héroe o superviviente…" aria-label="Buscar en el Libro de colección">
@@ -100,6 +109,15 @@
       <button class="lc-status-btn active" data-status-filter="all" type="button">Todos los objetos</button>
       <button class="lc-status-btn" data-status-filter="registered" type="button">Registrados / Desbloqueados</button>
       <button class="lc-status-btn" data-status-filter="pending" type="button">Pendientes por registrar</button>
+    </div>
+
+    <div class="lc-element-bar" id="lcElementBar" role="group" aria-label="Filtrar por elemento">
+      <button class="lc-element-btn active" data-element-filter="all" type="button">Todos los elementos</button>
+      <button class="lc-element-btn" data-element-filter="fisico" type="button">⚙️ Físico</button>
+      <button class="lc-element-btn" data-element-filter="energia" type="button">⚡ Energía</button>
+      <button class="lc-element-btn" data-element-filter="fuego" type="button">🔥 Fuego</button>
+      <button class="lc-element-btn" data-element-filter="agua" type="button">💧 Agua</button>
+      <button class="lc-element-btn" data-element-filter="naturaleza" type="button">🌿 Naturaleza</button>
     </div>
 
     <div class="lc-grid-layout">
@@ -201,6 +219,7 @@
 <!-- Modal de ficha técnica del Libro de colección -->
 <div class="lc-modal-overlay" id="lcModalOverlay">
   <div class="lc-modal-card" id="lcModalCard" role="dialog" aria-modal="true" aria-labelledby="lcModalName">
+    <button type="button" class="lc-modal-fav" id="lcModalFav" aria-label="Marcar como favorito" aria-pressed="false">☆</button>
     <button type="button" class="lc-modal-close" id="lcModalClose" aria-label="Cerrar ficha">✕</button>
     <div class="lc-modal-band" id="lcModalBand">
       <span class="lc-rarity-tag" id="lcModalRarityTag"></span>
@@ -216,8 +235,15 @@
       <h3 class="lc-modal-name" id="lcModalName"></h3>
       <p class="lc-modal-role" id="lcModalRole"></p>
 
-      <div class="lc-modal-stats" id="lcModalStats"></div>
-      <p class="lc-modal-illustrative">Ficha ilustrativa de la arquitectura — a la espera de la base de datos real.</p>
+      <div class="lc-modal-tabs" role="tablist" aria-label="Secciones de la ficha">
+        <button type="button" class="lc-modal-tab active" id="lcModalTabFicha" data-tab="ficha" role="tab">Ficha técnica</button>
+        <button type="button" class="lc-modal-tab" id="lcModalTabPerks" data-tab="perks" role="tab">Perks &amp; God Rolls</button>
+        <button type="button" class="lc-modal-tab" id="lcModalTabCalc" data-tab="calculadora" role="tab">Calculadora</button>
+      </div>
+
+      <div class="lc-modal-tabpanel active" id="lcModalStats" role="tabpanel"></div>
+      <div class="lc-modal-tabpanel" id="lcModalPerks" role="tabpanel"></div>
+      <div class="lc-modal-tabpanel" id="lcModalCalc" role="tabpanel"></div>
 
       <div class="lc-modal-nav">
         <button type="button" class="lc-modal-nav-btn" id="lcModalPrev">‹ Anterior</button>
