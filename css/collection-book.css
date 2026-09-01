@@ -310,13 +310,26 @@
   }
 
   /* ---------- Tarjeta "pendiente por registrar" ---------- */
-  .lc-card.is-pending{ opacity:.4; filter: grayscale(.6); }
-  .lc-card.is-pending:hover{ opacity:.65; filter: grayscale(.3); }
-  .lc-card-status{
-    position:absolute; top:8px; right:8px; font-size:.95rem; line-height:1;
-  }
+  .lc-card.is-pending{ opacity:.55; filter: grayscale(.5); }
+  .lc-card.is-pending:hover{ opacity:.8; filter: grayscale(.2); }
   .lc-card{ cursor:pointer; }
   .lc-card:focus-visible{ outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  /* Botón rápido de registro (✅/🔒) sobre la tarjeta */
+  .lc-card-register-btn{
+    position:absolute; top:8px; right:8px; z-index:2;
+    width:26px; height:26px; border-radius:50%; border:1px solid var(--border-soft);
+    background: rgba(8,10,26,.7); color:#fff; font-size:.85rem; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition: transform .15s ease, border-color .15s ease;
+  }
+  .lc-card-register-btn:hover{ transform: scale(1.1); border-color: rgba(246,201,69,.6); }
+
+  /* Ícono de elemento sobre la tarjeta */
+  .lc-card-element{
+    position:absolute; top:8px; left:8px; z-index:2; font-size:.9rem; line-height:1;
+    width:24px; height:24px; border-radius:50%; background: rgba(8,10,26,.6);
+    display:flex; align-items:center; justify-content:center;
+  }
 
   /* ---------- Media slot estandarizado (grid y modal) ---------- */
   .card-media-slot{
@@ -402,9 +415,116 @@
   .lc-modal-nav-btn:hover:not(:disabled){ border-color: rgba(255,140,46,.5); background: rgba(255,140,46,.1); }
   .lc-modal-nav-btn:disabled{ opacity:.35; cursor:not-allowed; }
 
+  /* ---------- Panel de nivel del Libro de colección (barra de XP) ---------- */
+  .lc-level-panel{
+    background: var(--surface); border:1px solid var(--border-soft); border-radius: var(--radius);
+    padding: 14px 18px; margin-bottom: 18px;
+  }
+  .lc-level-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+  .lc-level-title{ font-family: var(--font-display); font-weight:600; font-size:.88rem; color:#fff; }
+  .lc-level-percent{ font-family: var(--font-mono); font-size:.8rem; color: var(--gold); }
+  .lc-xp-bar{
+    width:100%; height:10px; border-radius:999px; background: rgba(255,255,255,.08);
+    overflow:hidden; border:1px solid var(--border-soft);
+  }
+  .lc-xp-fill{
+    height:100%; border-radius:999px; width:0%;
+    background: linear-gradient(90deg, var(--storm-purple-2), var(--gold), var(--energy-orange));
+    transition: width .5s cubic-bezier(.4,0,.2,1);
+  }
+  .lc-level-label{
+    display:block; margin-top:6px; font-family: var(--font-mono); font-size:.7rem; color: var(--muted-2);
+  }
+
+  /* ---------- Filtro por elemento ---------- */
+  .lc-element-bar{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom: 24px; }
+  .lc-element-btn{
+    cursor:pointer; background: var(--surface-solid); border:1px solid var(--border-soft); color: var(--muted);
+    font-family: var(--font-body); font-weight:600; font-size:.78rem;
+    padding: 7px 14px; border-radius: 10px;
+    transition: color .15s ease, background .15s ease, border-color .15s ease, box-shadow .2s ease;
+  }
+  .lc-element-btn:hover{ color:#fff; border-color: rgba(61,220,132,.4); }
+  .lc-element-btn.active{
+    color:#0a0a16; background: linear-gradient(135deg, var(--nature), var(--water));
+    border-color: transparent; box-shadow: 0 0 14px rgba(61,220,132,.4);
+  }
+
+  /* ---------- Botón de favorito en el modal ---------- */
+  .lc-modal-fav{
+    position:absolute; top:14px; right:56px; z-index:2;
+    width:32px; height:32px; border-radius:50%; border:1px solid var(--border);
+    background: rgba(13,15,29,.8); color: var(--gold); cursor:pointer; font-size:1.1rem;
+    display:flex; align-items:center; justify-content:center; transition: all .2s ease;
+  }
+  .lc-modal-fav:hover{ border-color: rgba(246,201,69,.6); background: rgba(246,201,69,.14); }
+  .lc-modal-fav[aria-pressed="true"]{ color: var(--gold); text-shadow: 0 0 10px rgba(246,201,69,.6); }
+
+  /* ---------- Pestañas del modal: Ficha técnica / Perks / Calculadora ---------- */
+  .lc-modal-tabs{ display:flex; gap:6px; margin: 4px 0 16px; border-bottom: 1px solid var(--border-soft); }
+  .lc-modal-tab{
+    flex:1; cursor:pointer; background:transparent; border:none; border-bottom: 2px solid transparent;
+    color: var(--muted); font-family: var(--font-display); font-weight:600; font-size:.78rem;
+    padding: 9px 6px; transition: color .15s ease, border-color .15s ease;
+  }
+  .lc-modal-tab:hover{ color:#fff; }
+  .lc-modal-tab.active{ color: var(--gold); border-bottom-color: var(--gold); }
+
+  .lc-modal-tabpanel{ display:none; }
+  .lc-modal-tabpanel.active{ display:block; }
+
+  /* ---------- Perks & God Rolls ---------- */
+  .lc-perk-block{
+    background: var(--surface); border:1px solid var(--border-soft); border-radius: 12px;
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .lc-perk-tag{
+    display:inline-block; margin-bottom:6px; font-family: var(--font-mono); font-size:.62rem;
+    text-transform:uppercase; letter-spacing:.05em; padding: 2px 9px; border-radius: 999px;
+    color: var(--water); background: rgba(56,189,248,.12); border:1px solid rgba(56,189,248,.4);
+  }
+  .lc-perk-tag-cmd{ color: var(--gold); background: rgba(246,201,69,.14); border-color: rgba(246,201,69,.45); }
+  .lc-perk-slots{
+    margin:0; padding-left: 20px; display:flex; flex-direction:column; gap:8px;
+    color: var(--text); font-size:.86rem; line-height:1.4;
+  }
+  .lc-perk-slots li{ padding-left:2px; }
+
+  /* ---------- Calculadora de reclutamiento ---------- */
+  .lc-calc-row{
+    background: var(--surface); border:1px solid var(--border-soft); border-radius: 12px;
+    padding: 10px 14px; margin-bottom: 10px;
+  }
+  .lc-calc-row.is-ok{ border-color: rgba(61,220,132,.45); }
+  .lc-calc-row.is-missing{ border-color: rgba(255,84,112,.4); }
+  .lc-calc-row-top{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    font-size:.86rem; color:#fff; margin-bottom:8px;
+  }
+  .lc-calc-needed{ font-family: var(--font-mono); font-size:.7rem; color: var(--muted-2); }
+  .lc-calc-row-bottom{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .lc-calc-row-bottom label{
+    display:flex; align-items:center; gap:8px; font-size:.78rem; color: var(--muted);
+  }
+  .lc-calc-input{
+    width:70px; background: var(--surface-solid); border:1px solid var(--border);
+    color:#fff; padding: 5px 8px; border-radius: 8px; font-family: var(--font-mono); font-size:.82rem;
+  }
+  .lc-calc-status{ font-family: var(--font-mono); font-size:.72rem; }
+  .lc-calc-row.is-ok .lc-calc-status{ color: var(--nature); }
+  .lc-calc-row.is-missing .lc-calc-status{ color:#ff5470; }
+  .lc-calc-result{
+    text-align:center; font-weight:600; font-size:.86rem; padding: 10px; border-radius: 10px; margin: 4px 0 10px;
+  }
+  .lc-calc-result.can-afford{ color: var(--nature); background: rgba(61,220,132,.1); border:1px solid rgba(61,220,132,.35); }
+  .lc-calc-result.cant-afford{ color:#ff8a9b; background: rgba(255,84,112,.1); border:1px solid rgba(255,84,112,.35); }
+
   @media (max-width: 480px){
     .subnav-toggle{ font-size:.8rem; padding:8px 13px; }
     .dev-card{ padding: 34px 18px; }
     .lc-item-grid{ grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); }
     .lc-modal-body{ padding: 18px; }
-  }
+    .lc-modal-fav{ right: 52px; top:12px; width:28px; height:28px; }
+    .lc-modal-tab{ font-size:.7rem; padding: 8px 4px; }
+    .lc-calc-row-bottom{ justify-content:flex-start; }
+                }
